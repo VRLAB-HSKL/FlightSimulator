@@ -15,13 +15,35 @@ public class GforceMockupWrapper : MonoBehaviour
     void Update()
     {
         //sendForces();
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            SerialConnection.setOutputOnPort(SerialConnection.LED_PORT, SerialConnection.HIGH);
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_SET, SerialConnection.HIGH);
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_RESET, SerialConnection.LOW);
         }
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            SerialConnection.setOutputOnPort(SerialConnection.LED_PORT, SerialConnection.LOW);
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_RESET, SerialConnection.HIGH);
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_SET, SerialConnection.LOW);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_SET, SerialConnection.HIGH);
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_RESET, SerialConnection.LOW);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_RESET, SerialConnection.HIGH);
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_SET, SerialConnection.LOW);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, SerialConnection.HIGH);
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, SerialConnection.LOW);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, SerialConnection.HIGH);
+            SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, SerialConnection.LOW);
         }
     }
 

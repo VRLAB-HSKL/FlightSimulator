@@ -8,6 +8,7 @@ public class InputRegistry : MonoBehaviour
 {
     public static event Action OnLeftTriggerPressed;
     public static event Action OnRightTriggerPressed;
+    public static event Action OnUKeyPressed;
 
     // Start is called before the first frame update
     void Start()

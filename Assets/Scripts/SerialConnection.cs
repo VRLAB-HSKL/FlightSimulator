@@ -11,13 +11,17 @@ using UnityEngine.XR.OpenXR.Features.Interactions;
 public class SerialConnection : MonoBehaviour
 {
     #region constants
-    public const int MOTOR1_PORT = 0;
-    public const int MOTOR2_PORT = 1;
-    public const int MOTOR3_PORT = 2;
+    public const int MOTOR1_PORT_SET = 12;
+    public const int MOTOR1_PORT_RESET = 11;
+    public const int MOTOR2_PORT_SET = 10;
+    public const int MOTOR2_PORT_RESET = 9;
+    public const int MOTOR3_PORT_SET = 8;
+    public const int MOTOR3_PORT_RESET = 7;
     public const int LED_PORT = 13;
     public const int HIGH = 1;
     public const int LOW = 0;
     private const string setOperationChar = ">";
+    private const int delay = 50;
     #endregion
 
     #region  exposedVariables
@@ -57,10 +61,12 @@ public class SerialConnection : MonoBehaviour
     
     #region communicationFunctions
     public static void Send(string s)
-    {
+    { 
+        throw new NotImplementedException();
         stream.Write(s);
         Debug.Log("Send value: " + s + "over serialconnection");
     }
+    
 
     public void read()
     {
@@ -85,11 +91,13 @@ public class SerialConnection : MonoBehaviour
 
     public static void setOutputOnPort(int port, int value)
     {
+        /*
         if (port != LED_PORT && port != MOTOR1_PORT && port != MOTOR2_PORT && port != MOTOR3_PORT)
         {
             throw new ArgumentException("Port '" + port +"' is no valid port");
         }
-
+        */
+        
         if (value != LOW && value != HIGH)
         {
             throw new ArgumentException("Value '" + value  +"' is no valid Value");

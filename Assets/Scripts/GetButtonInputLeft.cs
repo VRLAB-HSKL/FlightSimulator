@@ -17,8 +17,6 @@ public class GetButtonInputLeft : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        
         if (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Trigger))
         {
             Debug.Log("Left" + device + Input.mousePosition);
