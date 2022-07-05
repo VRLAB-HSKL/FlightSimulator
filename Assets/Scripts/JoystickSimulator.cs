@@ -23,22 +23,21 @@ public class JoystickSimulator : MonoBehaviour
         InputRegistry.OnRightTriggerReleased += endJoyStickTracking;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+   
     public Vector3 getJoyStickPosition()
     {
         return Vector3.zero;
     }
 
+    /**
+     * Returns vektor2 [range(1,-1),range(1,-1)]
+     * 0,0
+     */
     public Vector2 getJoyStickDelta()
     {
         float xAxis = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.JoystickX);
         float yAxis = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.JoystickY);
-        Vector2 delta = new Vector2(Mathf.Abs(joyStickZeroPosition.x - xAxis), Mathf.Abs(joyStickZeroPosition.y - yAxis));
+        Vector2 delta = new Vector2(joyStickZeroPosition.x - xAxis, joyStickZeroPosition.y - yAxis);
         return delta;
     }
 
@@ -50,6 +49,7 @@ public class JoystickSimulator : MonoBehaviour
 
     void startJoyStickTracking()
     {
+        joyStickTracking = true;
         float xAxis = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.JoystickX);
         float yAxis = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.JoystickY);
         joyStickZeroPosition = new Vector2(xAxis, yAxis);
@@ -57,6 +57,7 @@ public class JoystickSimulator : MonoBehaviour
 
     void startThrottleTracking()
     {
+        throttleTracking = true;
         throttleZeroPosition = HTCViveControllerProfile.ViveController.leftHand.devicePosition.ReadValue();
     }
 

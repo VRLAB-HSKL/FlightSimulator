@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class PlaneController : MonoBehaviour
 {
-<<<<<<< Updated upstream
+
     private float speed;
 
     private float maxSpeed;
 
     private float speedGoal;
-=======
+
     
     /****** Variablen ******/
     
@@ -61,7 +61,7 @@ public class PlaneController : MonoBehaviour
     {
         cockpitAirplane.transform.Rotate(joyStickposition); // Rotation des Cockpits
     }
->>>>>>> Stashed changes
+
     
     
     // Start is called before the first frame update
