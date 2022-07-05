@@ -23,13 +23,13 @@ public class InputRegistry : MonoBehaviour
     {
         if (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Trigger))
         {
-            OnLeftTriggerPressed?.Invoke();
+            OnLeftTriggerPressed?.Invoke(); // Throttle sollte aufgerufen werden
         }
         
 
         if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger))
         {
-            OnRightTriggerPressed?.Invoke();
+            OnRightTriggerPressed?.Invoke(); // Joystick müsste aufgerufen werden
         }
         
         if (ViveInput.GetPressUp(HandRole.LeftHand, ControllerButton.Trigger))
