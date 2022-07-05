@@ -23,6 +23,16 @@ public class JoystickSimulator : MonoBehaviour
         
     }
 
+    public Vector3 getJoyStickPosition()
+    {
+        return Vector3.zero;
+    }
+
+    public float getRelativeThrottlePosition()
+    {
+        return 0f;
+    }
+
     void startJoyStickTracking()
     {
         float xAxis = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.JoystickX);
