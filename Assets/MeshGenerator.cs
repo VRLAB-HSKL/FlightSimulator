@@ -30,12 +30,13 @@ public class MeshGenerator : MonoBehaviour
         
         mesh.vertices = vertices;
         mesh.triangles = triangles;
-        
+
         mesh.RecalculateNormals();
     }
 
     private void CreateShape()
     {
+        //generate vertices
         vertices = new Vector3[(xSize + 1) * (zSize + 1)]; // one quad needs 4 vertices, x = 1, y = 1 ==> (x+1) * (y + 1) == 4
         int i = 0;
         for (int z = 0; z < zSize + 1; z++)
@@ -48,24 +49,27 @@ public class MeshGenerator : MonoBehaviour
             }
         }
         
-        triangles = new int[xSize * zSize * 6];
-        int vert = 0;
-        int tris = 0;
+        //generate triangles
+        triangles = new int[xSize * zSize * 6]; //3 points per triangle , 2 triangles per quad
+        int vert = 0; // current lower left vertice of the quad
+        int tris = 0; // current triangle
         for (int z = 0; z < zSize; z++)
         {
             for (int x = 0; x < xSize; x++)
             {
+                //first triangle
                 triangles[tris + 0] = vert + 0;
                 triangles[tris + 1] = vert + xSize + 1;
                 triangles[tris + 2] = vert + 1;
+                //second triangle
                 triangles[tris + 3] = vert + 1;
                 triangles[tris + 4] = vert + xSize + 1;
                 triangles[tris + 5] = vert + xSize + 2;
-                vert++;
+                vert++; // shift lower left triangle one point to the right
                 tris += 6;
             }
 
-            vert++;
+            vert++;// skip the most outer vertice to prevent connecting the left edge to the right edge
         }
        
     }
