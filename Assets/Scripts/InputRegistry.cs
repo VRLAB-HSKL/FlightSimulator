@@ -8,6 +8,8 @@ public class InputRegistry : MonoBehaviour
 {
     public static event Action OnLeftTriggerPressed;
     public static event Action OnRightTriggerPressed;
+    public static event Action OnLeftTriggerReleased;
+    public static event Action OnRightTriggerReleased;
     public static event Action OnUKeyPressed;
 
     // Start is called before the first frame update
@@ -29,5 +31,17 @@ public class InputRegistry : MonoBehaviour
         {
             OnRightTriggerPressed?.Invoke();
         }
+        
+        if (ViveInput.GetPressUp(HandRole.LeftHand, ControllerButton.Trigger))
+        {
+            OnLeftTriggerReleased?.Invoke();
+        }
+        
+
+        if (ViveInput.GetPressUp(HandRole.RightHand, ControllerButton.Trigger))
+        {
+            OnRightTriggerReleased?.Invoke();
+        }
+
     }
 }
