@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HTC.UnityPlugin.Utility;
 using HTC.UnityPlugin.Vive;
+using Packages.Rider.Editor.UnitTesting;
 using UnityEngine;
 
 public class InputRegistry : MonoBehaviour
@@ -42,6 +44,12 @@ public class InputRegistry : MonoBehaviour
         {
             OnRightTriggerReleased?.Invoke();
         }
+        test();
+    }
 
+    void test()
+    {
+       Quaternion q = VivePose.GetPose(HandRole.RightHand).rot;
+       Debug.Log(q);
     }
 }

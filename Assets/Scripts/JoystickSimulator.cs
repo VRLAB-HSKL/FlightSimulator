@@ -1,14 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.Ports;
 using HTC.UnityPlugin.Vive;
 using UnityEngine;
 using UnityEngine.XR.OpenXR.Features.Interactions;
+using Valve.VR.InteractionSystem;
 
 public class JoystickSimulator : MonoBehaviour
 {
     private Vector2 joyStickZeroPosition;
-
+    private float maxJoyStickPosition = 90;
+    private float maxThrottlePosition = 90;
     private Vector3 throttleZeroPosition;
 
     private bool joyStickTracking = false;
