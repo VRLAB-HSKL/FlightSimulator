@@ -2,131 +2,91 @@ using System.Collections;
 using System.Collections.Generic;
 using HTC.UnityPlugin.Vive;
 using UnityEngine;
-
+[RequireComponent(typeof(JoyStick))]
+[RequireComponent(typeof(Throttle))]
 public class PlaneController : MonoBehaviour
 {
-
-    private float speed;
-
-    private float maxSpeed;
-
-    private float speedGoal;
-
-    float testVelocity = 0f;
-    float testVelocityRotate = 0f;
-
+    #region Public_Members
     public JoyStick joyStick;
-
     public Throttle throttle;
-    /****** Variablen ******/
     
-    private Rigidbody airplane;
+    public float accelerationPerSecond = 20f;
+    private float maxSpeedPerSec = 343f; // 1fache schallgeschwindigkeit
+    #endregion
+
+    #region Private_Members
+
+    private float currentSpeed = 0f; // currentspeed
+    private float speedGoal = 0f; // goal in range(0, maxspeedpersec)
+
+    private Vector3 currentRotationPerSecond = Vector3.zero;
+    private Vector3 maxRotationPerSecond = new Vector3(20, 0, 360); //x: Pitch z: Roll 
+
+    private Rigidbody jetBody;
     
-    // Throttle - Beschleunigung
-    private float throttleZero = -90f; 
+    #endregion
     
-    // Maximale Beschleunigung 
-    private float accelerationMax = 20f; 
-
-
-    // Joystick - Achsenverschiebung
-    private float xAxis, yAxis, zAxis;
-
-    private Rigidbody Rigidbody; 
-    private Vector3 velocity;
+    
 
 
     #region Unity_LifeCycle
     void Start()
     {
         
-        Rigidbody = GetComponent<Rigidbody>();
-        velocity = new Vector3(0,0f,0f);
+        jetBody = GetComponent<Rigidbody>();
+        
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-       
-        updateVectorTiltRotate(testVelocity, testVelocityRotate);
         if (throttle.tracking)
         {
-            
+            speedGoal = maxSpeedPerSec * throttle.getThrottleValue();
         }
 
         if (joyStick.tracking)
         {
             Vector3 delta = joyStick.getRelativePosition();
-            float rollPercentage = delta.y / 90;
             float pitchPercentage = delta.x / 90;
-            Debug.Log($"Rollpercentage: {rollPercentage} \t PitchPercentage: {pitchPercentage}");
-            updateVectorTiltRotate(pitchPercentage, rollPercentage);
+            float rollPercentage = delta.y / 90;
             
+            currentRotationPerSecond = new Vector3(
+                maxRotationPerSecond.x * pitchPercentage * Time.deltaTime,
+                0,
+                maxRotationPerSecond.z * rollPercentage * Time.deltaTime);
+            Debug.Log(currentRotationPerSecond);
+        }
+        else
+        {
+            currentRotationPerSecond = Vector3.zero;
+            //todo stop rotating smoothly
+        }
+        updatePlane();
+
+    }
+
+    
+
+    #endregion
+
+    #region Private_Functions
+    private void updatePlane()
+    {
+        //jetBody.MoveRotation(Quaternion.Euler(currentRotationPerSecond));
+        jetBody.rotation *= Quaternion.Euler(currentRotationPerSecond);
+        jetBody.velocity = new Vector3(0f, 0f, currentSpeed);
+        if (speedGoal > Mathf.Abs(currentSpeed) + accelerationPerSecond)
+        {
+            currentSpeed += accelerationPerSecond;
+            if (currentSpeed > maxSpeedPerSec) currentSpeed = maxSpeedPerSec;
         }
 
+        jetBody.velocity = new Vector3(0, 0, currentSpeed);
     }
     
 
     #endregion
-    
 
-    void updateVectorTiltRotate(float tilt, float rotate)
-    {
-        Vector3 degreesVector = new Vector3(tilt, 0f, rotate);
-        Quaternion quart = Quaternion.Euler(degreesVector * Time.fixedDeltaTime);
-        Rigidbody.MoveRotation(Rigidbody.rotation * quart);
-    }
     
-   /* void rotate(float degrees)
-    {
-        Vector3 degreesVector = new Vector3(testVelocity, 0, degrees);
-        Quaternion quart = Quaternion.Euler(degreesVector * Time.fixedDeltaTime);
-        rigi.MoveRotation(rigi.rotation * quart);
-    }
-
-    void tilt(float degrees)
-    {
-        
-        Vector3 degreesVector = new Vector3(degrees, 0f, testVelocityRotate); // Drehung des Flugzeuges um die X-Achse
-        Quaternion quart = Quaternion.Euler(degreesVector * Time.fixedDeltaTime);
-        rigi.MoveRotation(rigi.rotation * quart);
-    }
-*/
-    void accelerate(float schub, Vector3 zeroPosition, Vector3 newJoystickPosition)
-    {
-        Vector3 newPosition;
-        if (schub == 0)
-        {
-            newPosition = zeroPosition; // Ohne Schub kann sich das Flugzeug nicht verändern -> ohne Schub würde es Schweben //TODO
-        }
-        else
-        {
-            newPosition = zeroPosition + (schub * newJoystickPosition); // Vektorielle Addition. Ein Punkt wird mit einem Vektor und einem Lambda zu einem neuen Punkt generiert.
-            //cockpitAirplane.transform.Translate(newPosition * Time.deltaTime); // Smoothing des Fluges 
-            airplane.velocity = newPosition;
-        }
-    }
-    float schubStaerke(float throttleZero, float throttleNeu, float accelerationMax)
-    {
-        float neueSchubStaerke = 1 - (throttleNeu / throttleZero);
-        neueSchubStaerke = neueSchubStaerke * accelerationMax; // Berechnung der neuen Geschwindigkeit
-        return neueSchubStaerke;
-    }
-    
-    Vector3 resetPositionPlane(float schub, Vector3 zeroPosition, Vector3 newJoystickPosition)
-    {
-        Vector3 newPosition;
-        if (schub == 0)
-        {
-            newPosition = zeroPosition; // Ohne Schub kann sich das Flugzeug nicht verändern -> ohne Schub würde es Schweben //TODO
-        }
-        else
-        {
-            newPosition = zeroPosition + (schub * newJoystickPosition); // Vektorielle Addition. Ein Punkt wird mit einem Vektor und einem Lambda zu einem neuen Punkt generiert.
-            //cockpitAirplane.transform.Translate(newPosition * Time.deltaTime); // Smoothing des Fluges 
-            airplane.velocity = newPosition;
-        }
-
-        return newPosition;
-    }
     }// End class

@@ -44,21 +44,22 @@ public class Throttle : MonoBehaviour
      * 0 = no speed
      * @return - Throttlevalue in percent in range(-1,1) 
      */
-    float getThrottleValue()
+    public float getThrottleValue()
     {
-        
         Quaternion currentRotation = VivePose.GetPose(role).rot;
         float changeInZ = zeroPosition.z - currentRotation.eulerAngles.z;
+        
         if (changeInZ < 0)
         {
-            
+            if (changeInZ < -90) changeInZ = -90;
         }
 
         if (changeInZ > 0)
         {
-            
+            if (changeInZ > 90) changeInZ = 90;
         }
+        throttleValue = changeInZ / 90;
 
-        return changeInZ;
+        return throttleValue;
     }
 }
