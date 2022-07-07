@@ -14,97 +14,67 @@ public class PlaneController : MonoBehaviour
 
     float testVelocity = 0f;
     float testVelocityRotate = 0f;
-    
+
+    public JoyStick joyStick;
+
+    public Throttle throttle;
     /****** Variablen ******/
     
-    private Rigidbody airplaine;
+    private Rigidbody airplane;
     
     // Throttle - Beschleunigung
-    private float throttleZero = -90f; // -90° sind theoretisch 0% Schub. 0° sind 100% Schub positiv und -180° sind 100% Schub negativ
+    private float throttleZero = -90f; 
     
     // Maximale Beschleunigung 
-    private float accelerationMax = 20f; // 20 units per second - pos & neg 
+    private float accelerationMax = 20f; 
 
 
     // Joystick - Achsenverschiebung
     private float xAxis, yAxis, zAxis;
-    
-    
 
-
-    /****** Methoden ******/
-
-    float schubStaerke(float throttleZero, float throttleNeu, float accelerationMax)
-    {
-        float neueSchubStaerke = 1 - (throttleNeu / throttleZero);
-        neueSchubStaerke = neueSchubStaerke * accelerationMax; // Berechnung der neuen Geschwindigkeit
-        return neueSchubStaerke;
-    }
-    
-    Vector3 resetPositionPlane(float schub, Vector3 zeroPosition, Vector3 newJoystickPosition)
-    {
-        Vector3 newPosition;
-        if (schub == 0)
-        {
-            newPosition = zeroPosition; // Ohne Schub kann sich das Flugzeug nicht verändern -> ohne Schub würde es Schweben //TODO
-        }
-        else
-        {
-           
-            newPosition = zeroPosition + (schub * newJoystickPosition); // Vektorielle Addition. Ein Punkt wird mit einem Vektor und einem Lambda zu einem neuen Punkt generiert.
-         //   cockpitAirplane.transform.Translate(newPosition * Time.deltaTime); // Smoothing des Fluges 
-            airplaine.velocity = newPosition;
-            
-        }
-
-        return newPosition;
-    }
-
-    private Rigidbody rigi; // Test if this will work
+    private Rigidbody Rigidbody; 
     private Vector3 velocity;
-    
-    // Start is called before the first frame update
+
+
+    #region Unity_LifeCycle
     void Start()
     {
         
-        rigi = GetComponent<Rigidbody>();
+        Rigidbody = GetComponent<Rigidbody>();
         velocity = new Vector3(0,0f,0f);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.KeypadPlus))
+       
+        updateVectorTiltRotate(testVelocity, testVelocityRotate);
+        if (throttle.tracking)
         {
-            testVelocity += 5;
-        }else if (Input.GetKey(KeyCode.KeypadMinus)){
-            testVelocity -= 5;
-        }else if(Input.GetKey(KeyCode.O))
-        {
-            testVelocityRotate += 5;
-        }else if (Input.GetKey(KeyCode.P))
-        {
-            testVelocityRotate -= 5;
+            
         }
-        updateVectorTiltRotate(testVelocity, testVelocityRotate);    
-        
-        
-        // rotate
-        /*
-        if (Input.GetKey(KeyCode.O))
-            testVelocityRotate += 5;
-        else if (Input.GetKey(KeyCode.P))
-            testVelocityRotate -= 5;
-        rotate(testVelocityRotate);
-        */
-        
+
+        if (joyStick.tracking)
+        {
+            Vector3 delta = joyStick.getRelativePosition();
+            float rollPercentage = delta.y / 90;
+            float pitchPercentage = delta.x / 90;
+            Debug.Log($"Rollpercentage: {rollPercentage} \t PitchPercentage: {pitchPercentage}");
+            updateVectorTiltRotate(pitchPercentage, rollPercentage);
+            
+        }
+
     }
+    
+
+    #endregion
+    
 
     void updateVectorTiltRotate(float tilt, float rotate)
     {
         Vector3 degreesVector = new Vector3(tilt, 0f, rotate);
         Quaternion quart = Quaternion.Euler(degreesVector * Time.fixedDeltaTime);
-        rigi.MoveRotation(rigi.rotation * quart);
+        Rigidbody.MoveRotation(Rigidbody.rotation * quart);
     }
     
    /* void rotate(float degrees)
@@ -131,11 +101,32 @@ public class PlaneController : MonoBehaviour
         }
         else
         {
-           
             newPosition = zeroPosition + (schub * newJoystickPosition); // Vektorielle Addition. Ein Punkt wird mit einem Vektor und einem Lambda zu einem neuen Punkt generiert.
             //cockpitAirplane.transform.Translate(newPosition * Time.deltaTime); // Smoothing des Fluges 
-            airplaine.velocity = newPosition;
-            
+            airplane.velocity = newPosition;
         }
+    }
+    float schubStaerke(float throttleZero, float throttleNeu, float accelerationMax)
+    {
+        float neueSchubStaerke = 1 - (throttleNeu / throttleZero);
+        neueSchubStaerke = neueSchubStaerke * accelerationMax; // Berechnung der neuen Geschwindigkeit
+        return neueSchubStaerke;
+    }
+    
+    Vector3 resetPositionPlane(float schub, Vector3 zeroPosition, Vector3 newJoystickPosition)
+    {
+        Vector3 newPosition;
+        if (schub == 0)
+        {
+            newPosition = zeroPosition; // Ohne Schub kann sich das Flugzeug nicht verändern -> ohne Schub würde es Schweben //TODO
+        }
+        else
+        {
+            newPosition = zeroPosition + (schub * newJoystickPosition); // Vektorielle Addition. Ein Punkt wird mit einem Vektor und einem Lambda zu einem neuen Punkt generiert.
+            //cockpitAirplane.transform.Translate(newPosition * Time.deltaTime); // Smoothing des Fluges 
+            airplane.velocity = newPosition;
+        }
+
+        return newPosition;
     }
     }// End class

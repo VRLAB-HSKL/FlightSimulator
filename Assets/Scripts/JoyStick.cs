@@ -18,14 +18,25 @@ public class JoyStick : MonoBehaviour
     
     
     void Start()
+    { }
+
+    private void Update()
     {
-        InputRegistry.OnRightTriggerPressed += startTracking;
-        InputRegistry.OnRightTriggerReleased += endTracking;
+        if (ViveInput.GetPressDown(role, ControllerButton.Trigger))
+        {
+            startTracking();
+        }
+
+        if (ViveInput.GetPressUp(role, ControllerButton.Trigger))
+        {
+            endTracking();
+        }
     }
-    
+
     void startTracking()
     {
-        Quaternion q = VivePose.GetPose(HandRole.RightHand).rot;
+        tracking = true;
+        Quaternion q = VivePose.GetPose(role).rot;
         zeroPosition = q.eulerAngles;
     }
 
@@ -34,15 +45,49 @@ public class JoyStick : MonoBehaviour
         tracking = false;
     }
 
-    Vector3 getRelativePosition()
+    public Vector3 getRelativePosition()
     {
-        Quaternion q = VivePose.GetPose(HandRole.RightHand).rot;
-        return zeroPosition - q.eulerAngles;
+        Quaternion q = VivePose.GetPose(role).rot;
+        Vector3 delta = zeroPosition - q.eulerAngles;
+        delta = ensureDeltaIsInRange(delta);
+        return delta;
     }
 
-    private void OnDestroy()
+    /*
+     * Check if delta x or y exceed 90/-90 degrees and set them accordingly
+     */
+    private Vector3 ensureDeltaIsInRange(Vector3 delta)
     {
-        InputRegistry.OnRightTriggerPressed -= startTracking;
-        InputRegistry.OnRightTriggerReleased -= endTracking;
+        if (delta.x >= 0)
+        {
+            if (delta.x > 90)
+            {
+                delta.x = 90;
+            }
+        }
+        else
+        {
+            if (delta.x < -90)
+            {
+                delta.x = -90;
+            }
+        }
+
+        if (delta.y >= 0)
+        {
+            if (delta.y > 90)
+            {
+                delta.y = 90;
+            }
+        }
+        else
+        {
+            if (delta.y < -90)
+            {
+                delta.y = -90;
+            }
+        }
+
+        return delta;
     }
 }

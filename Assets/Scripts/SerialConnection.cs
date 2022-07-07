@@ -31,7 +31,7 @@ public class SerialConnection : MonoBehaviour
     #endregion
 
     #region privateMembers
-    private static SerialPort stream;
+    public static SerialPort stream;
     private float lastRead;
     private Thread readThread;
     #endregion

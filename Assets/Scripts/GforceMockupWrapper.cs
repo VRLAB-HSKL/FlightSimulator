@@ -14,6 +14,7 @@ public class GforceMockupWrapper : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*
         //sendForces();
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -45,6 +46,7 @@ public class GforceMockupWrapper : MonoBehaviour
             SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, SerialConnection.HIGH);
             SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, SerialConnection.LOW);
         }
+        */
     }
 
     private void sendForces()
