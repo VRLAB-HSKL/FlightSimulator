@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using HTC.UnityPlugin.Vive;
-using Unity.XR.OpenVR;
 using UnityEngine;
-using UnityEngine.XR.OpenXR.Features.Interactions;
+
 
 [RequireComponent(typeof(JoyStick))]
 [RequireComponent(typeof(Throttle))]
@@ -15,6 +14,9 @@ public class PlaneController : MonoBehaviour
     
     public float accelerationPerSecond = 20f;
     public float maxSpeedPerSec = 343f; // 1fache schallgeschwindigkeit
+
+    public GameObject throttleObject;
+    public GameObject flightStickObject;
     #endregion
 
     #region Private_Members
@@ -37,7 +39,6 @@ public class PlaneController : MonoBehaviour
     {
         
         jetBody = GetComponent<Rigidbody>();
-        
         
     }
 
@@ -99,10 +100,11 @@ public class PlaneController : MonoBehaviour
 
     private void alignPlaneWithHMD()
     {
-        GameObject hmd = GameObject.FindWithTag("Player");
         GameObject cockpit = GameObject.Find("Cockpit");
-        cockpit.transform.position = hmd.transform.position;
-        cockpit.transform.rotation = hmd.transform.rotation;
+        GameObject player = GameObject.FindWithTag("Player");
+        player.transform.localRotation = cockpit.transform.rotation;
+        //cockpit.transform.rotation = VivePose.GetPoseEx(BodyRole.Head).rot;
+        //cockpit.transform.position = VivePose.GetPoseEx(BodyRole.Head).pos;
     }
     #endregion
 
