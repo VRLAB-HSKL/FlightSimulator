@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using HTC.UnityPlugin.Vive;
 using UnityEngine;
+using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 
 [RequireComponent(typeof(JoyStick))]
@@ -28,7 +31,14 @@ public class PlaneController : MonoBehaviour
     private Vector3 maxRotationPerSecond = new Vector3(50, 0, 50); //x: Pitch z: Roll 
 
     private Rigidbody jetBody;
-    
+
+    #endregion
+
+    #region TestVariables
+
+    public bool aligned = false;
+    private Quaternion cameraZeroRotation= Quaternion.Euler(0,0,0 );
+
     #endregion
     
     
@@ -37,14 +47,18 @@ public class PlaneController : MonoBehaviour
     #region Unity_LifeCycle
     void Start()
     {
-        
         jetBody = GetComponent<Rigidbody>();
         
+    }
+
+    private void Update()
+    {
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        alignPlaneWithHMD();
         if (throttle.tracking)
         {
             speedGoal = maxSpeedPerSec * throttle.getThrottleValue();
@@ -67,9 +81,9 @@ public class PlaneController : MonoBehaviour
             //todo stop rotating smoothly
         }
         updatePlane();
-        if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Pad))
+        if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip))
         {
-            //alignPlaneWithHMD();
+            alignPlaneWithHMD();
         }
 
     }
@@ -102,10 +116,19 @@ public class PlaneController : MonoBehaviour
     {
         GameObject cockpit = GameObject.Find("Cockpit");
         GameObject player = GameObject.FindWithTag("Player");
-        player.transform.localRotation = cockpit.transform.rotation;
-        //cockpit.transform.rotation = VivePose.GetPoseEx(BodyRole.Head).rot;
-        //cockpit.transform.position = VivePose.GetPoseEx(BodyRole.Head).pos;
+        if (cameraZeroRotation.eulerAngles != Vector3.zero)
+        {
+            player.transform.rotation = cameraZeroRotation;
+            return;
+        }
+        Vector3 targetPosition = Vector3.zero - GameObject.FindWithTag("MainCamera").transform.localRotation.eulerAngles;
+        targetPosition.x = 0;
+        targetPosition.z = 0;
+        player.transform.Rotate(targetPosition);
+        cameraZeroRotation = player.transform.rotation;
+        aligned = true;
     }
+    
     #endregion
 
     
