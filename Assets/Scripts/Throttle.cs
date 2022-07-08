@@ -11,25 +11,29 @@ public class Throttle : MonoBehaviour
     private float throttleValue; // percentage from -1 to 1
 
     public HandRole role;
-    
+    public ControllerButton trackingActivationButton = ControllerButton.Trigger;
+
     void Start()
-    { }
+    {
+        
+    }
 
     
     void Update()
     {
-        if (ViveInput.GetPressDown(role, ControllerButton.Trigger))
+        if (ViveInput.GetPressDown(role, trackingActivationButton))
         {
             startTracking();
         }
 
-        if (ViveInput.GetPressUp(role, ControllerButton.Trigger))
+        if (ViveInput.GetPressUp(role, trackingActivationButton))
         {
             endTracking();
         }
     }
     void startTracking()
     {
+        tracking = true;
         zeroPosition = VivePose.GetPose(role).pos;
     }
 
@@ -46,8 +50,8 @@ public class Throttle : MonoBehaviour
      */
     public float getThrottleValue()
     {
-        Quaternion currentRotation = VivePose.GetPose(role).rot;
-        float changeInZ = zeroPosition.z - currentRotation.eulerAngles.z;
+        Vector3 currentPosition = VivePose.GetPose(role).pos;
+        float changeInZ = (zeroPosition.z - currentPosition.z) * 100 * 3;
         
         if (changeInZ < 0)
         {
@@ -59,7 +63,6 @@ public class Throttle : MonoBehaviour
             if (changeInZ > 90) changeInZ = 90;
         }
         throttleValue = changeInZ / 90;
-
         return throttleValue;
     }
 }

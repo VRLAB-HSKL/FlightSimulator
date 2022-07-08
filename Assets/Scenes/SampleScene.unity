@@ -422,6 +422,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ViveRig
       objectReference: {fileID: 0}
+    - target: {fileID: 107548, guid: cbfd31aaac017204885fcc03f0579a1a, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 114796, guid: cbfd31aaac017204885fcc03f0579a1a, type: 3}
       propertyPath: m_TagString
       value: GameController
@@ -568,6 +572,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tracking: 0
   role: 0
+  tolerance: 5
+  trackingActivationButton: 0
 --- !u!1 &307045862 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1c6403442b4f92e4c8f6084a1f8bd960,
@@ -610,6 +616,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joyStick: {fileID: 307045867}
   throttle: {fileID: 307045866}
+  accelerationPerSecond: 20
+  maxSpeedPerSec: 343
 --- !u!114 &307045866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -624,6 +632,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tracking: 0
   role: 1
+  trackingActivationButton: 0
 --- !u!114 &307045867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -638,6 +647,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tracking: 0
   role: 0
+  tolerance: 5
+  trackingActivationButton: 0
 --- !u!1 &599916901
 GameObject:
   m_ObjectHideFlags: 0

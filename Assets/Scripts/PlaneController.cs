@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using HTC.UnityPlugin.Vive;
+using Unity.XR.OpenVR;
 using UnityEngine;
+using UnityEngine.XR.OpenXR.Features.Interactions;
+
 [RequireComponent(typeof(JoyStick))]
 [RequireComponent(typeof(Throttle))]
 public class PlaneController : MonoBehaviour
@@ -11,16 +14,16 @@ public class PlaneController : MonoBehaviour
     public Throttle throttle;
     
     public float accelerationPerSecond = 20f;
-    private float maxSpeedPerSec = 343f; // 1fache schallgeschwindigkeit
+    public float maxSpeedPerSec = 343f; // 1fache schallgeschwindigkeit
     #endregion
 
     #region Private_Members
-
-    private float currentSpeed = 0f; // currentspeed
-    private float speedGoal = 0f; // goal in range(0, maxspeedpersec)
+    
+    public float currentSpeed = 0f; // currentspeed
+    public float speedGoal = 0f; // goal in range(0, maxspeedpersec)
 
     private Vector3 currentRotationPerSecond = Vector3.zero;
-    private Vector3 maxRotationPerSecond = new Vector3(20, 0, 360); //x: Pitch z: Roll 
+    private Vector3 maxRotationPerSecond = new Vector3(50, 0, 50); //x: Pitch z: Roll 
 
     private Rigidbody jetBody;
     
@@ -34,6 +37,7 @@ public class PlaneController : MonoBehaviour
     {
         
         jetBody = GetComponent<Rigidbody>();
+        
         
     }
 
@@ -55,7 +59,6 @@ public class PlaneController : MonoBehaviour
                 maxRotationPerSecond.x * pitchPercentage * Time.deltaTime,
                 0,
                 maxRotationPerSecond.z * rollPercentage * Time.deltaTime);
-            Debug.Log(currentRotationPerSecond);
         }
         else
         {
@@ -63,6 +66,10 @@ public class PlaneController : MonoBehaviour
             //todo stop rotating smoothly
         }
         updatePlane();
+        if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Pad))
+        {
+            //alignPlaneWithHMD();
+        }
 
     }
 
@@ -75,17 +82,28 @@ public class PlaneController : MonoBehaviour
     {
         //jetBody.MoveRotation(Quaternion.Euler(currentRotationPerSecond));
         jetBody.rotation *= Quaternion.Euler(currentRotationPerSecond);
-        jetBody.velocity = new Vector3(0f, 0f, currentSpeed);
-        if (speedGoal > Mathf.Abs(currentSpeed) + accelerationPerSecond)
+        speedGoal = Mathf.Abs(speedGoal);
+        
+        if (speedGoal > currentSpeed)
         {
+            Debug.Log(speedGoal);
             currentSpeed += accelerationPerSecond;
             if (currentSpeed > maxSpeedPerSec) currentSpeed = maxSpeedPerSec;
         }
 
-        jetBody.velocity = new Vector3(0, 0, currentSpeed);
+        Vector3 forward = jetBody.transform.forward;
+        forward = forward * currentSpeed * Time.fixedDeltaTime;
+        jetBody.MovePosition((jetBody.position + forward));
+        //jetBody.velocity = new Vector3(0, 0, currentSpeed);
     }
-    
 
+    private void alignPlaneWithHMD()
+    {
+        GameObject hmd = GameObject.FindWithTag("Player");
+        GameObject cockpit = GameObject.Find("Cockpit");
+        cockpit.transform.position = hmd.transform.position;
+        cockpit.transform.rotation = hmd.transform.rotation;
+    }
     #endregion
 
     

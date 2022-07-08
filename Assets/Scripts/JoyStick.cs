@@ -15,6 +15,10 @@ public class JoyStick : MonoBehaviour
     private Vector3 zeroPosition;
 
     public HandRole role;
+
+    public float tolerance = 5f;
+    public ControllerButton trackingActivationButton = ControllerButton.Trigger;
+    
     
     
     void Start()
@@ -22,15 +26,16 @@ public class JoyStick : MonoBehaviour
 
     private void Update()
     {
-        if (ViveInput.GetPressDown(role, ControllerButton.Trigger))
+        if (ViveInput.GetPressDown(role, trackingActivationButton))
         {
             startTracking();
         }
 
-        if (ViveInput.GetPressUp(role, ControllerButton.Trigger))
+        if (ViveInput.GetPressUp(role, trackingActivationButton))
         {
             endTracking();
         }
+        
     }
 
     void startTracking()
@@ -86,6 +91,17 @@ public class JoyStick : MonoBehaviour
             {
                 delta.y = -90;
             }
+        }
+
+        //Tolerance for unwanted stick movement
+        if (delta.x > -tolerance && delta.x < tolerance)
+        {
+            delta.x = 0;
+        }
+
+        if (delta.y > -tolerance && delta.y < tolerance)
+        {
+            delta.y = 0;
         }
 
         return delta;
