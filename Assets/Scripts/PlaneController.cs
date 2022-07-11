@@ -58,7 +58,6 @@ public class PlaneController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        alignPlaneWithHMD();
         if (throttle.tracking)
         {
             speedGoal = maxSpeedPerSec * throttle.getThrottleValue();
@@ -81,7 +80,7 @@ public class PlaneController : MonoBehaviour
             //todo stop rotating smoothly
         }
         updatePlane();
-        if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip))
+        if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.PadTouch))
         {
             alignPlaneWithHMD();
         }
