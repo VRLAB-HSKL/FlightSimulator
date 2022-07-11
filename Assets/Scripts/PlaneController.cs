@@ -161,9 +161,6 @@ public class PlaneController : MonoBehaviour
 
     private void calculateFlightStickAdjustmentVector(Vector3 rotatedFlightStickVector3)
     {
-        /* NOTES:
-         We need the if statements, because the physic of the flightstick is kinda wierd. It simply has to do with the rotation of a sphere but with parametes of an 'stick'
-         */
         Vector3 flightStickadjustment;
         if (rotatedFlightStickVector3.x != 0 && rotatedFlightStickVector3.y == 0)  // only x axis is involved
         {
