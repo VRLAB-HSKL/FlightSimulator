@@ -124,7 +124,7 @@ public class PlaneController : MonoBehaviour
             if (currentSpeed > maxSpeedPerSec) currentSpeed = maxSpeedPerSec;
             
             // throttleAdjustment
-            throttleObject.transform.rotation = Quaternion.Euler(new Vector3(calculateThrottleAdjustmentAngle(throttle.getThrottleValue()),0,0)); // adjust angle
+            throttleObject.transform.localRotation = Quaternion.Euler(new Vector3(calculateThrottleAdjustmentAngle(throttle.getThrottleValue()),0,0)); // adjust angle
         }
 
         Vector3 forward = jetBody.transform.forward;
@@ -180,7 +180,7 @@ public class PlaneController : MonoBehaviour
             flightStickadjustment.y = rotatedFlightStickVector3.y;
             flightStickadjustment.z = flightStickadjustment.y * (-1);
         }
-        flightStickObject.transform.rotation = Quaternion.Euler(flightStickadjustment);
+        flightStickObject.transform.localRotation = Quaternion.Euler(flightStickadjustment);
     }
     
     

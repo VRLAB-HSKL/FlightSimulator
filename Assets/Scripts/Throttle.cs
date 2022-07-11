@@ -7,18 +7,19 @@ public class Throttle : MonoBehaviour
 {
     public bool tracking = false;
 
+    public HandRole role;
+    public ControllerButton trackingActivationButton = ControllerButton.Trigger;
+    
     private Vector3 zeroPosition;
     private float throttleValue; // percentage from -1 to 1
 
-    public HandRole role;
-    public ControllerButton trackingActivationButton = ControllerButton.Trigger;
-
+    
     void Start()
     {
         
     }
 
-    
+
     void Update()
     {
         if (ViveInput.GetPressDown(role, trackingActivationButton))
