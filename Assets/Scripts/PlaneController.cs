@@ -66,8 +66,8 @@ public class PlaneController : MonoBehaviour
     void FixedUpdate()
     {
 
-        alignPlaneWithHMD();
-        audioSource.Play();
+        //alignPlaneWithHMD();
+        //audioSource.Play();
 
         if (throttle.tracking)
         {
@@ -137,7 +137,7 @@ public class PlaneController : MonoBehaviour
         //jetBody.velocity = new Vector3(0, 0, currentSpeed);
     }
 
-    private void alignPlaneWithHMD()
+    public void alignPlaneWithHMD()
     {
         GameObject cockpit = GameObject.Find("Cockpit");
         GameObject player = GameObject.FindWithTag("Player");

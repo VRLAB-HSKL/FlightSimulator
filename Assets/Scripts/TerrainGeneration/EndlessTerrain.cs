@@ -50,7 +50,6 @@ public class EndlessTerrain : MonoBehaviour
         {
             terrainChunk.setVisible(false);
         }
-
         terrainChunksVisibleLastUpdate.Clear();
         int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunksize);
         int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunksize);
