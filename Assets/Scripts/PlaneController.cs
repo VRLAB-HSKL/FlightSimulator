@@ -71,15 +71,22 @@ public class PlaneController : MonoBehaviour
 
 
         //alignPlaneWithHMD();
-      
-        
-
         if (throttle.tracking)
         {
             speedGoal = maxSpeedPerSec * throttle.getThrottleValue();
-            
-            
         }
+
+        if (speedGoal > currentSpeed)
+        {
+            currentSpeed += accelerationPerSecond;
+            if (currentSpeed > maxSpeedPerSec) currentSpeed = maxSpeedPerSec;
+        }else if (speedGoal < currentSpeed)
+        {
+            currentSpeed -= accelerationPerSecond;
+            if (currentSpeed < 0) currentSpeed = 0;
+        }
+        
+        
 
         if (joyStick.tracking)
         {
@@ -114,28 +121,16 @@ public class PlaneController : MonoBehaviour
     #region Private_Functions
     private void updatePlane()
     {
-        //jetBody.MoveRotation(Quaternion.Euler(currentRotationPerSecond));
+        
         jetBody.rotation *= Quaternion.Euler(currentRotationPerSecond);
-        //flightStickObject.transform.rotation = Quaternion.Euler(currentRotationPerSecond);
+        
         calculateFlightStickAdjustmentVector(delta);
-     
+        throttleObject.transform.localRotation = Quaternion.Euler(new Vector3(calculateThrottleAdjustmentAngle(throttle.getThrottleValue()),0,0));
         
-        speedGoal = Mathf.Abs(speedGoal);
-        
-        if (speedGoal > currentSpeed)
-        {
-            Debug.Log(speedGoal);
-            currentSpeed += accelerationPerSecond;
-            if (currentSpeed > maxSpeedPerSec) currentSpeed = maxSpeedPerSec;
-            
-            // throttleAdjustment
-            throttleObject.transform.localRotation = Quaternion.Euler(new Vector3(calculateThrottleAdjustmentAngle(throttle.getThrottleValue()),0,0)); // adjust angle
-        }
+       
 
         Vector3 forward = jetBody.transform.forward;
         forward = forward * currentSpeed * Time.fixedDeltaTime;
-       
-        
         
         jetBody.MovePosition((jetBody.position + forward));
         

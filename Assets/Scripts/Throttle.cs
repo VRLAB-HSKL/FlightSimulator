@@ -9,17 +9,10 @@ public class Throttle : MonoBehaviour
 
     public HandRole role;
     public ControllerButton trackingActivationButton = ControllerButton.Trigger;
+    public float rangeInMeters;
     
     private Vector3 zeroPosition;
-    private float throttleValue; // percentage from -1 to 1
-
-    
-    void Start()
-    {
-        
-    }
-
-
+    private float throttleValue = 0f;
     void Update()
     {
         if (ViveInput.GetPressDown(role, trackingActivationButton))
@@ -30,6 +23,11 @@ public class Throttle : MonoBehaviour
         if (ViveInput.GetPressUp(role, trackingActivationButton))
         {
             endTracking();
+        }
+
+        if (tracking)
+        {
+            adjustThrottleValue();
         }
     }
     void startTracking()
@@ -43,27 +41,23 @@ public class Throttle : MonoBehaviour
         tracking = false;
     }
 
-    /*
-     * 1 = full speed forward
-     * -1 = full speed backwards
-     * 0 = no speed
-     * @return - Throttlevalue in percent in range(-1,1) 
-     */
+    void adjustThrottleValue()
+    {
+        
+        Vector3 currentPosition = VivePose.GetPose(role).pos;
+        float changeInZ = (zeroPosition.z - currentPosition.z);
+        float newPercentage = Mathf.Clamp(changeInZ / rangeInMeters, -1 ,1);
+        if (0.01 >= newPercentage && newPercentage >= -0.01)
+        {
+            //change is too low to adjust throttle
+            return;
+        }
+        throttleValue = Mathf.Clamp01(throttleValue + newPercentage);
+        Debug.Log("Change in Z: " + changeInZ + "\nNew percentage: " + newPercentage + "\nThrottleValue: " + throttleValue);
+        
+    }
     public float getThrottleValue()
     {
-        Vector3 currentPosition = VivePose.GetPose(role).pos;
-        float changeInZ = (zeroPosition.z - currentPosition.z) * 100 * 3;
-        
-        if (changeInZ < 0)
-        {
-            if (changeInZ < -90) changeInZ = -90;
-        }
-
-        if (changeInZ > 0)
-        {
-            if (changeInZ > 90) changeInZ = 90;
-        }
-        throttleValue = changeInZ / 90;
         return throttleValue;
     }
 }

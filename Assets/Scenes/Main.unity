@@ -123,6 +123,25 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &46229457 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 417702309534108043, guid: 7a5e2bdd567f5f04587db0f3a40385ff,
+    type: 3}
+  m_PrefabInstance: {fileID: 119949851}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &46229461
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46229457}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 15.348643, y: 43.785236, z: 24.202648}
+  m_Center: {x: -0.0000009536743, y: -91.80348, z: 11.7574215}
 --- !u!1001 &119949851
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -134,6 +153,18 @@ PrefabInstance:
       propertyPath: monitor
       value: 
       objectReference: {fileID: 1408241380}
+    - target: {fileID: 307045865, guid: 7a5e2bdd567f5f04587db0f3a40385ff, type: 3}
+      propertyPath: maxSpeedPerSec
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 307045865, guid: 7a5e2bdd567f5f04587db0f3a40385ff, type: 3}
+      propertyPath: accelerationPerSecond
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 307045866, guid: 7a5e2bdd567f5f04587db0f3a40385ff, type: 3}
+      propertyPath: rangeInMeters
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1406909249875516229, guid: 7a5e2bdd567f5f04587db0f3a40385ff,
         type: 3}
       propertyPath: m_Name
@@ -279,10 +310,13 @@ MonoBehaviour:
   detailLevels:
   - levelOfDetail: 0
     visibleDistanceThreshhold: 200
+    useForCollider: 0
   - levelOfDetail: 1
     visibleDistanceThreshhold: 400
+    useForCollider: 1
   - levelOfDetail: 2
     visibleDistanceThreshhold: 600
+    useForCollider: 0
   viewer: {fileID: 119949852}
   mapMaterial: {fileID: 2100000, guid: 2946d7b88bab4714e9aef7f9772563c2, type: 2}
 --- !u!114 &651582398
@@ -306,6 +340,7 @@ MonoBehaviour:
   lacunarity: 2
   seed: 0
   offSet: {x: 0, y: 0}
+  useFalloff: 0
   meshHeightMultiplier: 20
   meshHeightCurve:
     serializedVersion: 2
