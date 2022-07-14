@@ -21,9 +21,10 @@ public class PlaneController : MonoBehaviour
     public GameObject throttleObject;
     public GameObject flightStickObject;
     
+    // gameobject for sound
+    public GameObject monitor; // Sound should come out of the monitors
+    
 
-    public AudioSource audioSource;
-    public AudioListener audioListener;
     #endregion
 
     #region Private_Members
@@ -54,7 +55,9 @@ public class PlaneController : MonoBehaviour
     void Start()
     {
         jetBody = GetComponent<Rigidbody>();
-        audioSource.GetComponent<AudioSource>();
+        
+        
+      
 
     }
 
@@ -66,8 +69,10 @@ public class PlaneController : MonoBehaviour
     void FixedUpdate()
     {
 
+
         //alignPlaneWithHMD();
-        //audioSource.Play();
+      
+        
 
         if (throttle.tracking)
         {
