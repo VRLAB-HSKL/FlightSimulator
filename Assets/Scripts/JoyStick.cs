@@ -12,17 +12,18 @@ public class JoyStick : MonoBehaviour
 {
     public bool tracking = false;
 
-    private Vector3 zeroPosition;
+    
 
     public HandRole role;
-
-    public float tolerance = 5f;
+    public Transform controllerTransform;
     public ControllerButton trackingActivationButton = ControllerButton.Trigger;
-    
-    
-    
-    void Start()
-    { }
+    public float range;
+    public float tolerance = 0.5f;
+   
+    private Vector3 zeroPosition;
+    private Vector2 delta;
+    private Vector3 zeroAxisRotation;
+    private Vector3 zeroAngle;
 
     private void Update()
     {
@@ -35,75 +36,59 @@ public class JoyStick : MonoBehaviour
         {
             endTracking();
         }
-        
+
+        if (tracking)
+        {
+            calculateRelativePosition();
+        }
+
     }
+
 
     void startTracking()
     {
         tracking = true;
-        Quaternion q = VivePose.GetPose(role).rot;
+        Quaternion q = controllerTransform.localRotation;
         zeroPosition = q.eulerAngles;
     }
 
     void endTracking()
     {
         tracking = false;
+        delta = Vector2.zero;
+        
     }
-
-    public Vector3 getRelativePosition()
+    
+    private void calculateRelativePosition()
     {
-        Quaternion q = VivePose.GetPose(role).rot;
-        Vector3 delta = zeroPosition - q.eulerAngles;
-        delta = ensureDeltaIsInRange(delta);
-        return delta;
-    }
+        Quaternion current = controllerTransform.localRotation;
+        Vector3 currentEuler = current.eulerAngles;
+        Vector3 deltaV3 = zeroPosition - currentEuler;
+        float deltaX = deltaV3.x;
+        float deltaY = deltaV3.z;
+        if (deltaX > 180) deltaX -= 360;
+        if (deltaX < -180) deltaX += 360;
 
-    /*
-     * Check if delta x or y exceed 90/-90 degrees and set them accordingly
-     */
-    private Vector3 ensureDeltaIsInRange(Vector3 delta)
-    {
-        if (delta.x >= 0)
-        {
-            if (delta.x > 90)
-            {
-                delta.x = 90;
-            }
-        }
-        else
-        {
-            if (delta.x < -90)
-            {
-                delta.x = -90;
-            }
-        }
+        if (deltaY > 180) deltaY -= 360;
+        if (deltaY < -180) deltaY += 360;
 
-        if (delta.y >= 0)
-        {
-            if (delta.y > 90)
-            {
-                delta.y = 90;
-            }
-        }
-        else
-        {
-            if (delta.y < -90)
-            {
-                delta.y = -90;
-            }
-        }
-
-        //Tolerance for unwanted stick movement
+        Mathf.Clamp(deltaX, -90, 90);
+        Mathf.Clamp(deltaY, -90, 90);
         if (delta.x > -tolerance && delta.x < tolerance)
         {
             delta.x = 0;
         }
-
         if (delta.y > -tolerance && delta.y < tolerance)
         {
             delta.y = 0;
         }
-
-        return delta;
+        delta.x = deltaX;
+        delta.y = deltaY;
     }
+
+    public Vector2 getRelativePosition()
+    {
+        return new Vector2(delta.x/range, delta.y/range);
+    }
+    
 }

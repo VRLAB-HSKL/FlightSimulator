@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.avr_ss_2022_flightsim.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Users\\Jazit\\UnityProjects\\AVR_SS_2022_FlightSim\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "AVR_SS_2022_FlightSim [Testing]"
+        }
+      }
+    }
+  ]
+}

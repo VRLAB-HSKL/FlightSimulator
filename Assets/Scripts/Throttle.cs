@@ -53,8 +53,7 @@ public class Throttle : MonoBehaviour
             return;
         }
         throttleValue = Mathf.Clamp01(throttleValue + newPercentage);
-        Debug.Log("Change in Z: " + changeInZ + "\nNew percentage: " + newPercentage + "\nThrottleValue: " + throttleValue);
-        
+
     }
     public float getThrottleValue()
     {
