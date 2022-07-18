@@ -29,6 +29,7 @@ public class PlaneController : MonoBehaviour
     public float speedGoal = 0f; // goal in range(0, maxspeedpersec)
 
     public FlightPhysics flightPhysics;
+    public MotorController m_MotorController;
     #endregion
 
     #region Private_Members
@@ -41,6 +42,7 @@ public class PlaneController : MonoBehaviour
 
     private Vector3 flightStickRotation;
     private Vector2 delta;
+    private Vector3 velocityLastFrame;
     #endregion
 
     #region TestVariables
@@ -58,7 +60,7 @@ public class PlaneController : MonoBehaviour
     {
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
-        center = GameObject.Find("center");
+        
         
     }
 
@@ -73,45 +75,6 @@ public class PlaneController : MonoBehaviour
         
         float pitchPercentage = 0f;
         float rollPercentage = 0f;
-        //alignPlaneWithHMD();
-        
-        if (throttle.tracking)
-        {
-            speedGoal = maxSpeedPerSec * throttle.getThrottleValue();
-        }
-
-        if (speedGoal > currentSpeed)
-        {
-            currentSpeed += accelerationPerSecond;
-            FindObjectOfType<AudioManager>().Play("StartRunway");
-            if (currentSpeed > maxSpeedPerSec) currentSpeed = maxSpeedPerSec;
-        }else if (speedGoal < currentSpeed)
-        {
-            currentSpeed -= accelerationPerSecond;
-            if (currentSpeed < 0) currentSpeed = 0;
-        }
-        
-        if (joyStick.tracking)
-        {
-            delta = joyStick.getRelativePosition();
-            pitchPercentage = delta.x;
-            rollPercentage = delta.y;
-            
-            
-            currentRotationPerSecond = new Vector3(
-                maxRotationPerSecond.x * pitchPercentage * Time.deltaTime,
-                0,
-                maxRotationPerSecond.z * rollPercentage * Time.deltaTime);
-
-        }
-        else
-        {
-            currentRotationPerSecond = Vector3.zero;
-            //todo stop rotating smoothly
-        }
-        
-        //updatePlane();
-
         
         if (joyStick.tracking)
         {
@@ -121,15 +84,32 @@ public class PlaneController : MonoBehaviour
         }
         float throttleValue = throttle.getThrottleValue();
         flightPhysics.Move(rollPercentage,pitchPercentage,0f,throttle.getThrottleValue(),true);
-                 
+        
+        updateMotionSeat();
+        velocityLastFrame = jetBody.velocity;         
         // collision sound
-        Collider coll = center.GetComponent<BoxCollider>();
+        Collider coll = GetComponent<BoxCollider>();
         OnTriggerEnter(coll);    
 
-    } // End FixedUpdate
-    
-    
+    }
 
+    private void updateMotionSeat()
+    {
+        Vector3 vDelta = jetBody.velocity - velocityLastFrame;
+
+        if (vDelta.z > 1)
+        {
+            m_MotorController.setMotor1();
+        }else if (vDelta.z < -1)
+        {
+            m_MotorController.resetMotor1();
+        }
+        else
+        {
+            m_MotorController.disableMotor1();
+        }
+        
+    }
     
 
     #endregion
@@ -214,3 +194,40 @@ public class PlaneController : MonoBehaviour
 
     
 }// End class
+/*
+ * if (throttle.tracking)
+        {
+            speedGoal = maxSpeedPerSec * throttle.getThrottleValue();
+        }
+
+        if (speedGoal > currentSpeed)
+        {
+            currentSpeed += accelerationPerSecond;
+            FindObjectOfType<AudioManager>().Play("StartRunway");
+            if (currentSpeed > maxSpeedPerSec) currentSpeed = maxSpeedPerSec;
+        }else if (speedGoal < currentSpeed)
+        {
+            currentSpeed -= accelerationPerSecond;
+            if (currentSpeed < 0) currentSpeed = 0;
+        }
+        
+        if (joyStick.tracking)
+        {
+            delta = joyStick.getRelativePosition();
+            pitchPercentage = delta.x;
+            rollPercentage = delta.y;
+            
+            
+            currentRotationPerSecond = new Vector3(
+                maxRotationPerSecond.x * pitchPercentage * Time.deltaTime,
+                0,
+                maxRotationPerSecond.z * rollPercentage * Time.deltaTime);
+
+        }
+        else
+        {
+            currentRotationPerSecond = Vector3.zero;
+            //todo stop rotating smoothly
+        }
+         updatePlane();
+ */

@@ -56,10 +56,7 @@ public class MotorController : MonoBehaviour
     {
         if (SerialConnection.stream.IsOpen)
         {
-            Debug.Log("UPDATE MOTORS");
-            setMotor1Rotation(motor1NewGoal);
-            setMotor2Rotation(motor2NewGoal);
-            setMotor3Rotation(motor3NewGoal);    
+           
         }
         
     }
