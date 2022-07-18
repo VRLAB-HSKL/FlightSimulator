@@ -211,7 +211,7 @@ public class FlightPhysics : MonoBehaviour
         // Air brakes work by directly modifying drag. This part is actually pretty realistic!
         m_Rigidbody.drag = (AirBrakes ? (m_OriginalDrag + extraDrag) * m_AirBrakesEffect : m_OriginalDrag + extraDrag);
         // Forward speed affects angular drag - at high forward speed, it's much harder for the plane to spin
-        m_Rigidbody.angularDrag = m_OriginalAngularDrag * ForwardSpeed;
+        m_Rigidbody.angularDrag = m_OriginalAngularDrag * ForwardSpeed / 10;
     }
 
 

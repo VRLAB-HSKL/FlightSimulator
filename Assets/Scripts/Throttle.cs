@@ -11,6 +11,7 @@ public class Throttle : MonoBehaviour
     public ControllerButton trackingActivationButton = ControllerButton.Trigger;
     public float rangeInMeters;
     public float currentPercentage = 0f;
+    public bool invert = true;
     private Vector3 zeroPosition;
     private float throttleValue = 0f;
     void Update()
@@ -58,6 +59,10 @@ public class Throttle : MonoBehaviour
     }
     public float getThrottleValue()
     {
+        if (invert)
+        {
+            return -throttleValue;
+        }
         return throttleValue;
     }
 }

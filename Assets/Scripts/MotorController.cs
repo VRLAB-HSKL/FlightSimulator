@@ -37,7 +37,9 @@ public class MotorController : MonoBehaviour
     #region UNITY_LIFECYCLE
     void Start()
     {
-        
+        disableMotor1();
+        disableMotor2();
+        disableMotor3();
     }
     void Update()
     {

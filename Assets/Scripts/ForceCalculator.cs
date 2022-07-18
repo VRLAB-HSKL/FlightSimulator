@@ -9,8 +9,10 @@ public static class ForceCalculator
     public static float calculateGForce(Vector3 oldVelocity, Vector3 currentVelocity, float deltaTime)
     {
         float gs;
-        Vector3 vDelta = currentVelocity - oldVelocity;
-        float v = vDelta.z;
+        float oldMagnitude = oldVelocity.magnitude;
+        float currentMagnitude = currentVelocity.magnitude;
+        //Vector3 vDelta = currentVelocity - oldVelocity;
+        float v = currentMagnitude - oldMagnitude;
         gs = v / (deltaTime * g);
         return gs;
     }

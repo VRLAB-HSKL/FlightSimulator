@@ -22,8 +22,7 @@ public class PlaneController : MonoBehaviour
     public GameObject throttleObject;
     public GameObject flightStickObject;
     
-    // gameobject for collision
-    private GameObject center;
+    private Collider collider;
     
     public float currentSpeed = 0f; 
     public float speedGoal = 0f; // goal in range(0, maxspeedpersec)
@@ -63,8 +62,8 @@ public class PlaneController : MonoBehaviour
     {
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
-        
-        
+        collider = GetComponent<BoxCollider>();
+
     }
 
     private void Update()
@@ -86,13 +85,30 @@ public class PlaneController : MonoBehaviour
         flightPhysics.Move(rollPercentage,pitchPercentage,0f,throttle.getThrottleValue(),true);
         
         updateMotionSeat();
+        calculateFlightStickAdjustmentVector(delta);
+        
         /*
          * 
         // collision sound
         Collider coll = GetComponent<BoxCollider>();
         OnTriggerEnter(coll); 
-         */   
+         */
 
+    }
+
+    private void OnCollisionStay(Collision other)
+    {
+        if (other.gameObject.name == "runway1")
+        {
+            if (throttle.getThrottleValue() == 0)
+            {
+                jetBody.angularDrag = 0f;
+                jetBody.drag = 0f;
+                jetBody.velocity = Vector3.zero;
+                jetBody.angularVelocity = Vector3.zero;
+            }
+            
+        }
     }
 
     private void updateMotionSeat()
@@ -107,10 +123,10 @@ public class PlaneController : MonoBehaviour
             velocityLastMotorUpdate = currentVelocity;
             Debug.Log($"Current Gs: {g}");
 
-            if (g > ForceCalculator.g + .5f)
+            if (g > 1)
             {
                 m_MotorController.setMotor1();
-            }else if (g < ForceCalculator.g - .5f)
+            }else if (g < -1)
             {
                 m_MotorController.resetMotor1();
             }
