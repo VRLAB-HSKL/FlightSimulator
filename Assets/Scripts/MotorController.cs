@@ -6,6 +6,8 @@ using UnityEngine;
 public class MotorController : MonoBehaviour
 {
     #region CONSTANTS
+
+    public float timeBetweenUpdates = .25f;
     #endregion
 
     #region TEST
@@ -28,6 +30,8 @@ public class MotorController : MonoBehaviour
     private float motor2_goal = 0f;
     
     private float motor3_goal = 0f;
+
+    private float timeSinceLastMotorUpdate = 0f;
     #endregion
 
     #region UNITY_LIFECYCLE
@@ -37,9 +41,11 @@ public class MotorController : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.U))
+        timeSinceLastMotorUpdate += Time.deltaTime;
+        if (timeSinceLastMotorUpdate >= timeBetweenUpdates)
         {
             updateMotors();
+            timeSinceLastMotorUpdate = 0f;
         }
     }
     #endregion
@@ -99,40 +105,61 @@ public class MotorController : MonoBehaviour
         }
         motor3_degrees_rotated = degrees;
     }
+
+    public bool connected()
+    {
+        return SerialConnection.stream.IsOpen;
+    }
     #endregion
     
     #region PRIVATE_FUNCTIONS
-    private void setMotor1()
+    public void setMotor1()
     {
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_SET, SerialConnection.HIGH);
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_RESET, SerialConnection.LOW);
     }
 
-    private void resetMotor1()
+    public void resetMotor1()
     {
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_RESET, SerialConnection.HIGH);
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_SET, SerialConnection.LOW);
     }
-    private void setMotor2()
+
+    public void disableMotor1()
+    {
+        SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_RESET, SerialConnection.LOW);
+        SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_SET, SerialConnection.LOW);
+    }
+    public void setMotor2()
     {
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_SET, SerialConnection.HIGH);
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_RESET, SerialConnection.LOW);
     }
 
-    private void resetMotor2()
+    public void resetMotor2()
     {
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_RESET, SerialConnection.HIGH);
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_SET, SerialConnection.LOW);
     }
-    private void setMotor3()
+    public void disableMotor2()
+    {
+        SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_RESET, SerialConnection.LOW);
+        SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_SET, SerialConnection.LOW);
+    }
+    public void setMotor3()
     {
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, SerialConnection.HIGH);
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, SerialConnection.LOW);
     }
 
-    private void resetMotor3()
+    public void resetMotor3()
     {
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, SerialConnection.HIGH);
+        SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, SerialConnection.LOW);
+    }
+    public void disableMotor3()
+    {
+        SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, SerialConnection.LOW);
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, SerialConnection.LOW);
     }
     
