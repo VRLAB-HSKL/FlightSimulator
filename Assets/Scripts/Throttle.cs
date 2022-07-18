@@ -10,7 +10,7 @@ public class Throttle : MonoBehaviour
     public HandRole role;
     public ControllerButton trackingActivationButton = ControllerButton.Trigger;
     public float rangeInMeters;
-    
+    public float currentPercentage = 0f;
     private Vector3 zeroPosition;
     private float throttleValue = 0f;
     void Update()
@@ -53,6 +53,7 @@ public class Throttle : MonoBehaviour
             return;
         }
         throttleValue = Mathf.Clamp01(throttleValue + newPercentage);
+        currentPercentage = throttleValue;
 
     }
     public float getThrottleValue()

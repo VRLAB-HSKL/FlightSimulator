@@ -41,12 +41,15 @@ public class MotorController : MonoBehaviour
     }
     void Update()
     {
+        /*
+         * 
         timeSinceLastMotorUpdate += Time.deltaTime;
         if (timeSinceLastMotorUpdate >= timeBetweenUpdates)
         {
             updateMotors();
             timeSinceLastMotorUpdate = 0f;
         }
+         */
     }
     #endregion
 

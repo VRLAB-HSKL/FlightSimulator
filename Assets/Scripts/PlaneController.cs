@@ -42,13 +42,16 @@ public class PlaneController : MonoBehaviour
 
     private Vector3 flightStickRotation;
     private Vector2 delta;
-    private Vector3 velocityLastFrame;
+    
     #endregion
 
     #region TestVariables
 
     
     private Quaternion cameraZeroRotation= Quaternion.Euler(0,0,0 );
+    private float timeSinceLastMotorUpdate = 0f;
+    private const float timeBetweenUpdates = 2.25f;
+    private Vector3 velocityLastMotorUpdate;
 
     #endregion
     
@@ -71,11 +74,8 @@ public class PlaneController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        
-        
         float pitchPercentage = 0f;
         float rollPercentage = 0f;
-        
         if (joyStick.tracking)
         {
             delta = joyStick.getRelativePosition();
@@ -86,29 +86,39 @@ public class PlaneController : MonoBehaviour
         flightPhysics.Move(rollPercentage,pitchPercentage,0f,throttle.getThrottleValue(),true);
         
         updateMotionSeat();
-        velocityLastFrame = jetBody.velocity;         
+        /*
+         * 
         // collision sound
         Collider coll = GetComponent<BoxCollider>();
-        OnTriggerEnter(coll);    
+        OnTriggerEnter(coll); 
+         */   
 
     }
 
     private void updateMotionSeat()
     {
-        Vector3 vDelta = jetBody.velocity - velocityLastFrame;
+        timeSinceLastMotorUpdate += Time.deltaTime;
+        if (timeSinceLastMotorUpdate >= timeBetweenUpdates)
+        {
+            timeSinceLastMotorUpdate = 0f;
+            Vector3 currentVelocity = jetBody.velocity;
+            float g = ForceCalculator.calculateGForce(velocityLastMotorUpdate, currentVelocity, timeBetweenUpdates);
 
-        if (vDelta.z > 1)
-        {
-            m_MotorController.setMotor1();
-        }else if (vDelta.z < -1)
-        {
-            m_MotorController.resetMotor1();
+            velocityLastMotorUpdate = currentVelocity;
+            Debug.Log($"Current Gs: {g}");
+
+            if (g > ForceCalculator.g + .5f)
+            {
+                m_MotorController.setMotor1();
+            }else if (g < ForceCalculator.g - .5f)
+            {
+                m_MotorController.resetMotor1();
+            }
+            else
+            {
+                m_MotorController.resetMotor1();
+            }
         }
-        else
-        {
-            m_MotorController.disableMotor1();
-        }
-        
     }
     
 
