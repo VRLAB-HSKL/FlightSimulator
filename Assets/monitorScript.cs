@@ -7,7 +7,7 @@ public class monitorScript : MonoBehaviour
     void Start()
     {
     
-    FindObjectOfType<AudioManager>().Play("CockpitIndoorSound");
+    //FindObjectOfType<AudioManager>().Play("CockpitIndoorSound"); comment, because of sound distractions
     
     }
 

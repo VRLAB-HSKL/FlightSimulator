@@ -22,8 +22,9 @@ public class PlaneController : MonoBehaviour
     public GameObject throttleObject;
     public GameObject flightStickObject;
     
-    // gameobject for sound
-    public GameObject monitor; // Sound should come out of the monitors
+    // gameobject for collision
+    private GameObject center;
+    
     public float currentSpeed = 0f; 
     public float speedGoal = 0f; // goal in range(0, maxspeedpersec)
 
@@ -57,7 +58,8 @@ public class PlaneController : MonoBehaviour
     {
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
-
+        center = GameObject.Find("center");
+        
     }
 
     private void Update()
@@ -67,6 +69,8 @@ public class PlaneController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        
+        
         float pitchPercentage = 0f;
         float rollPercentage = 0f;
         //alignPlaneWithHMD();
@@ -79,6 +83,7 @@ public class PlaneController : MonoBehaviour
         if (speedGoal > currentSpeed)
         {
             currentSpeed += accelerationPerSecond;
+            FindObjectOfType<AudioManager>().Play("StartRunway");
             if (currentSpeed > maxSpeedPerSec) currentSpeed = maxSpeedPerSec;
         }else if (speedGoal < currentSpeed)
         {
@@ -117,7 +122,13 @@ public class PlaneController : MonoBehaviour
         float throttleValue = throttle.getThrottleValue();
         flightPhysics.Move(rollPercentage,pitchPercentage,0f,throttle.getThrottleValue(),true);
                  
-    }
+        // collision sound
+        Collider coll = center.GetComponent<BoxCollider>();
+        OnTriggerEnter(coll);    
+
+    } // End FixedUpdate
+    
+    
 
     
 
@@ -178,9 +189,15 @@ public class PlaneController : MonoBehaviour
     #endregion
     
     #endregion
+
+    private void OnTriggerEnter(Collider other)
+    {
+        FindObjectOfType<AudioManager>().Play("Crash");
+    }
+
     public void alignPlaneWithHMD()
     {
-        GameObject cockpit = GameObject.Find("Cockpit");
+        
         GameObject player = GameObject.FindWithTag("Player");
         if (cameraZeroRotation.eulerAngles != Vector3.zero)
         {
@@ -193,10 +210,7 @@ public class PlaneController : MonoBehaviour
         player.transform.Rotate(targetPosition);
         cameraZeroRotation = player.transform.rotation;
     }
-    
-    }// End class
-/*
- * 
- 
 
-*/
+
+    
+}// End class
