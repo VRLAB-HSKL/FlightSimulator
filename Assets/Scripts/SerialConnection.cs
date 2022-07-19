@@ -102,7 +102,6 @@ public class SerialConnection : MonoBehaviour
         {
             throw new ArgumentException("Value '" + value  +"' is no valid Value");
         }
-        Debug.Log("Writing: " + setOperationChar + port + ":" + value);
         stream.WriteLine(setOperationChar + port + ":" + value);
     }
     #endregion

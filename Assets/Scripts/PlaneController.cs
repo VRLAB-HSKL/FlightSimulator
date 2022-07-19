@@ -82,7 +82,8 @@ public class PlaneController : MonoBehaviour
             rollPercentage = delta.y;
         }
         float throttleValue = throttle.getThrottleValue();
-        flightPhysics.Move(rollPercentage,pitchPercentage,0f,throttle.getThrottleValue(),true);
+        float convertedThrottle = (throttleValue * 2) - 1; 
+        flightPhysics.Move(rollPercentage,pitchPercentage,0f,convertedThrottle,true);
         
         updateMotionSeat();
         calculateFlightStickAdjustmentVector(delta);
@@ -116,27 +117,69 @@ public class PlaneController : MonoBehaviour
         timeSinceLastMotorUpdate += Time.deltaTime;
         if (timeSinceLastMotorUpdate >= timeBetweenUpdates)
         {
-            timeSinceLastMotorUpdate = 0f;
-            Vector3 currentVelocity = jetBody.velocity;
-            float g = ForceCalculator.calculateGForce(velocityLastMotorUpdate, currentVelocity, timeBetweenUpdates);
-
-            velocityLastMotorUpdate = currentVelocity;
-            Debug.Log($"Current Gs: {g}");
-
-            if (g > 1)
-            {
-                m_MotorController.setMotor1();
-            }else if (g < -1)
-            {
-                m_MotorController.resetMotor1();
-            }
-            else
-            {
-                m_MotorController.resetMotor1();
-            }
+            updateForwardGForce();
+            updateRotationMotors();
         }
+        
     }
-    
+
+    private void updateRotationMotors()
+    {
+        Vector3 currentRotation = jetBody.rotation.eulerAngles;
+        float zAxis = currentRotation.z;
+        m_MotorController.disableMotor2();
+        m_MotorController.disableMotor3();
+
+        if (zAxis > 45 && zAxis < 135)
+        {
+            //left
+            m_MotorController.setMotor2();
+            m_MotorController.resetMotor3();
+        }
+
+        if (zAxis < -45 && zAxis > -135)
+        {
+            //right
+            m_MotorController.setMotor3();
+            m_MotorController.resetMotor2();
+        }
+
+        if (zAxis > 135 || zAxis < -135)
+        {
+            //topdown
+            m_MotorController.setMotor2();
+            m_MotorController.setMotor3();
+        }
+
+        
+    }
+
+    private void updateForwardGForce()
+    {
+        timeSinceLastMotorUpdate = 0f;
+        Vector3 currentVelocity = jetBody.velocity;
+        float g = ForceCalculator.calculateGForce(velocityLastMotorUpdate, currentVelocity, timeBetweenUpdates);
+
+        velocityLastMotorUpdate = currentVelocity;
+        Debug.Log($"Current Gs: {g}");
+
+        if (g > 0.3f)
+        {
+            m_MotorController.setMotor1();
+            //play sound accelerate
+        }
+        else if (g < -0.3f)
+        {
+            m_MotorController.resetMotor1();
+            //play sound decelerate
+        }
+        else
+        {
+            m_MotorController.disableMotor1();
+            //play default
+        }
+        
+    }
 
     #endregion
 

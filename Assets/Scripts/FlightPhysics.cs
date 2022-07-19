@@ -81,11 +81,7 @@ public class FlightPhysics : MonoBehaviour
         YawInput = yawInput;
         ThrottleInput = throttleInput;
         AirBrakes = airBrakes;
-        Debug.Log($"float rollInput{rollInput}," +
-                  $" float pitchInput{pitchInput}," +
-                  $" float yawInput{yawInput}" +
-                  $", float throttleInput{throttleInput}," +
-                  $" bool airBrakes{airBrakes}");
+        
         ClampInputs();
 
         CalculateRollAndPitchAngles();
@@ -117,11 +113,6 @@ public class FlightPhysics : MonoBehaviour
         PitchInput = Mathf.Clamp(PitchInput, -1, 1);
         YawInput = Mathf.Clamp(YawInput, -1, 1);
         ThrottleInput = Mathf.Clamp(ThrottleInput, -1, 1);
-        Debug.Log(
-            $"Clamped: float rollInput{RollInput}," +
-                  $" float pitchInput{PitchInput}," +
-                  $" float yawInput{YawInput}" +
-                  $", float throttleInput{ThrottleInput}");
     }
 
 
@@ -183,22 +174,9 @@ public class FlightPhysics : MonoBehaviour
             ThrottleInput = -0.5f;
         }
 
-        var previousThrottle = Throttle;
+        
         // Adjust throttle based on throttle input (or immobilized state)
         Throttle = Mathf.Clamp01(Throttle + ThrottleInput * Time.deltaTime * m_ThrottleChangeSpeed);
-
-        if (Throttle > previousThrottle)
-        {
-            state = Acceleration.Accelerating;
-        }else if (Throttle < previousThrottle)
-        {
-            state = Acceleration.Decelerating;
-        }
-        else
-        {
-            state = Acceleration.Constant;
-        }
-
         // current engine power is just:
         EnginePower = Throttle * m_MaxEnginePower;
     }
