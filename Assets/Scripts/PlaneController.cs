@@ -63,6 +63,8 @@ public class PlaneController : MonoBehaviour
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
         collider = GetComponent<BoxCollider>();
+        
+        FindObjectOfType<AudioManager>().Play("StartWithoutEnginePower");
 
     }
 
@@ -73,6 +75,7 @@ public class PlaneController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        
         float pitchPercentage = 0f;
         float rollPercentage = 0f;
         if (joyStick.tracking)
