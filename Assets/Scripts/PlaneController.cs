@@ -16,40 +16,31 @@ public class PlaneController : MonoBehaviour
     public JoyStick joyStick;
     public Throttle throttle;
     
-    public float accelerationPerSecond = 20f;
-    public float maxSpeedPerSec = 343f; // 1fache schallgeschwindigkeit
-
+    public FlightPhysics flightPhysics;
+    public MotorController m_MotorController;
+    
     public GameObject throttleObject;
     public GameObject flightStickObject;
     
-    private Collider collider;
+    public float motorUpdateInterval = .25f;
     
-    public float currentSpeed = 0f; 
-    public float speedGoal = 0f; // goal in range(0, maxspeedpersec)
-
-    public FlightPhysics flightPhysics;
-    public MotorController m_MotorController;
+    
     #endregion
 
     #region Private_Members
+    private Rigidbody jetBody;
     
     
     private Vector3 currentRotationPerSecond = Vector3.zero;
-    private Vector3 maxRotationPerSecond = new Vector3(50, 0, 50); //x: Pitch z: Roll 
-
-    private Rigidbody jetBody;
-
     private Vector3 flightStickRotation;
     private Vector2 delta;
     
+    private float timeSinceLastMotorUpdate = 0f;
     #endregion
 
     #region TestVariables
-
     
     private Quaternion cameraZeroRotation= Quaternion.Euler(0,0,0 );
-    private float timeSinceLastMotorUpdate = 0f;
-    private const float timeBetweenUpdates = 2.25f;
     private Vector3 velocityLastMotorUpdate;
 
     #endregion
@@ -62,20 +53,22 @@ public class PlaneController : MonoBehaviour
     {
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
-        collider = GetComponent<BoxCollider>();
-        
         FindObjectOfType<AudioManager>().Play("StartWithoutEnginePower");
-
     }
-
-    private void Update()
-    {
-    }
-
-    // Update is called once per frame
+    
     void FixedUpdate()
     {
         
+        updatePlane();
+
+        updateHotasModel();
+
+        updateMotionSeat();
+        
+    }
+
+    private void updatePlane()
+    {
         float pitchPercentage = 0f;
         float rollPercentage = 0f;
         if (joyStick.tracking)
@@ -84,42 +77,21 @@ public class PlaneController : MonoBehaviour
             pitchPercentage = delta.x;
             rollPercentage = delta.y;
         }
+
         float throttleValue = throttle.getThrottleValue();
-        float convertedThrottle = (throttleValue * 2) - 1; 
-        flightPhysics.Move(rollPercentage,pitchPercentage,0f,convertedThrottle,true);
-        
-        updateMotionSeat();
-        calculateFlightStickAdjustmentVector(delta);
-        
-        /*
-         * 
-        // collision sound
-        Collider coll = GetComponent<BoxCollider>();
-        OnTriggerEnter(coll); 
-         */
-
+        float convertedThrottle = (throttleValue * 2) - 1;
+        flightPhysics.Move(rollPercentage, pitchPercentage, 0f, convertedThrottle, true);
     }
 
-    private void OnCollisionStay(Collision other)
-    {
-        if (other.gameObject.name == "runway1")
-        {
-            if (throttle.getThrottleValue() == 0)
-            {
-                jetBody.angularDrag = 0f;
-                jetBody.drag = 0f;
-                jetBody.velocity = Vector3.zero;
-                jetBody.angularVelocity = Vector3.zero;
-            }
-            
-        }
-    }
+    
 
     private void updateMotionSeat()
     {
         timeSinceLastMotorUpdate += Time.deltaTime;
-        if (timeSinceLastMotorUpdate >= timeBetweenUpdates)
+        if (timeSinceLastMotorUpdate >= motorUpdateInterval)
         {
+            timeSinceLastMotorUpdate = 0f;
+            
             updateForwardGForce();
             updateRotationMotors();
         }
@@ -159,9 +131,9 @@ public class PlaneController : MonoBehaviour
 
     private void updateForwardGForce()
     {
-        timeSinceLastMotorUpdate = 0f;
+        
         Vector3 currentVelocity = jetBody.velocity;
-        float g = ForceCalculator.calculateGForce(velocityLastMotorUpdate, currentVelocity, timeBetweenUpdates);
+        float g = ForceCalculator.calculateGForce(velocityLastMotorUpdate, currentVelocity, motorUpdateInterval);
 
         velocityLastMotorUpdate = currentVelocity;
         Debug.Log($"Current Gs: {g}");
@@ -187,23 +159,11 @@ public class PlaneController : MonoBehaviour
     #endregion
 
     #region Private_Functions
-    private void updatePlane()
+    private void updateHotasModel()
     {
+        adjustFlightStickModel(delta);
         
-        jetBody.transform.Rotate(currentRotationPerSecond, Space.Self);
-
-        //setspeed
-        Vector3 forward = jetBody.transform.forward;
-        forward = forward * currentSpeed * Time.fixedDeltaTime;
-        jetBody.MovePosition((jetBody.position + forward));
-        
-        
-        //graphics
-        calculateFlightStickAdjustmentVector(delta);
         throttleObject.transform.localRotation = Quaternion.Euler(new Vector3(calculateThrottleAdjustmentAngle(throttle.getThrottleValue()),0,0));
-
-
-        //jetBody.velocity = new Vector3(0, 0, currentSpeed);
     }
 
 
@@ -214,7 +174,7 @@ public class PlaneController : MonoBehaviour
         return ((-90 * throttleValue) -90); // Calculate Angle of Throttle
     }
 
-    private void calculateFlightStickAdjustmentVector(Vector3 rotatedFlightStickVector3)
+    private void adjustFlightStickModel(Vector3 rotatedFlightStickVector3)
     {
         Vector3 flightStickadjustment;
         if (rotatedFlightStickVector3.x != 0 && rotatedFlightStickVector3.y == 0)  // only x axis is involved
@@ -262,44 +222,23 @@ public class PlaneController : MonoBehaviour
         player.transform.Rotate(targetPosition);
         cameraZeroRotation = player.transform.rotation;
     }
+    
+    private void OnCollisionStay(Collision other)
+    {
+        if (other.gameObject.name == "runway1")
+        {
+            if (throttle.getThrottleValue() == 0)
+            {
+                jetBody.angularDrag = 0f;
+                jetBody.drag = 0f;
+                jetBody.velocity = Vector3.zero;
+                jetBody.angularVelocity = Vector3.zero;
+            }
+            
+        }
+    }
 
 
     
 }// End class
-/*
- * if (throttle.tracking)
-        {
-            speedGoal = maxSpeedPerSec * throttle.getThrottleValue();
-        }
 
-        if (speedGoal > currentSpeed)
-        {
-            currentSpeed += accelerationPerSecond;
-            FindObjectOfType<AudioManager>().Play("StartRunway");
-            if (currentSpeed > maxSpeedPerSec) currentSpeed = maxSpeedPerSec;
-        }else if (speedGoal < currentSpeed)
-        {
-            currentSpeed -= accelerationPerSecond;
-            if (currentSpeed < 0) currentSpeed = 0;
-        }
-        
-        if (joyStick.tracking)
-        {
-            delta = joyStick.getRelativePosition();
-            pitchPercentage = delta.x;
-            rollPercentage = delta.y;
-            
-            
-            currentRotationPerSecond = new Vector3(
-                maxRotationPerSecond.x * pitchPercentage * Time.deltaTime,
-                0,
-                maxRotationPerSecond.z * rollPercentage * Time.deltaTime);
-
-        }
-        else
-        {
-            currentRotationPerSecond = Vector3.zero;
-            //todo stop rotating smoothly
-        }
-         updatePlane();
- */
