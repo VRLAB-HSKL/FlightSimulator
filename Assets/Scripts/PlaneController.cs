@@ -142,16 +142,22 @@ public class PlaneController : MonoBehaviour
         {
             m_MotorController.setMotor1();
             //play sound accelerate
+            FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
+            FindObjectOfType<AudioManager>().Play("Accelerate");
         }
         else if (g < -0.3f)
         {
             m_MotorController.resetMotor1();
             //play sound decelerate
+            FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
+            FindObjectOfType<AudioManager>().Play("brake");
         }
         else
         {
             m_MotorController.disableMotor1();
             //play default
+            FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
+            FindObjectOfType<AudioManager>().Play("normalSpeedSound");
         }
         
     }
