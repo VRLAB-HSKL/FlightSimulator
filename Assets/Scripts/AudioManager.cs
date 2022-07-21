@@ -7,6 +7,7 @@ public class AudioManager : MonoBehaviour
     #region variables
 
     public Sound[] sounds;
+    public AudioSource engine;
 
     #endregion
 
@@ -36,11 +37,16 @@ public class AudioManager : MonoBehaviour
             return; // if there is any problem with the soundfile
             
         }
-        s.source.Play();
+        //s.source.Play();
+        engine.clip = s.clip;
+        engine.Play();
+        
     }
 
     public void Stop(string name)
     {
+        engine.Stop();
+        /*
         Sound s = Array.Find(sounds, sound => sound.name == name); // find the right sound, where sound is equal to the used name
         if (s == null)
         {
@@ -48,6 +54,7 @@ public class AudioManager : MonoBehaviour
             
         }
         s.source.Stop();
+        */
     }
     
     

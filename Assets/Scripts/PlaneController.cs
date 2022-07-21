@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using HTC.UnityPlugin.Vive;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
@@ -22,7 +23,9 @@ public class PlaneController : MonoBehaviour
     public GameObject throttleObject;
     public GameObject flightStickObject;
     
+    
     public float motorUpdateInterval = .25f;
+
     
     
     #endregion
@@ -53,7 +56,7 @@ public class PlaneController : MonoBehaviour
     {
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
-        FindObjectOfType<AudioManager>().Play("StartWithoutEnginePower");
+        //FindObjectOfType<AudioManager>().Play("StartWithoutEnginePower");
     }
     
     void FixedUpdate()
@@ -142,22 +145,27 @@ public class PlaneController : MonoBehaviour
         {
             m_MotorController.setMotor1();
             //play sound accelerate
-            FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
-            FindObjectOfType<AudioManager>().Play("Accelerate");
+            //FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
+            //FindObjectOfType<AudioManager>().Play("Accelerate");
         }
         else if (g < -0.3f)
         {
             m_MotorController.resetMotor1();
             //play sound decelerate
+            /*
             FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
             FindObjectOfType<AudioManager>().Play("brake");
+            */
         }
         else
         {
             m_MotorController.disableMotor1();
             //play default
-            FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
+            /*
+             * FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
             FindObjectOfType<AudioManager>().Play("normalSpeedSound");
+             */
+            
         }
         
     }
@@ -244,7 +252,12 @@ public class PlaneController : MonoBehaviour
         }
     }
 
-
-    
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.name == "Ground")
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
 }// End class
 

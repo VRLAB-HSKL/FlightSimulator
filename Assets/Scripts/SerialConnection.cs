@@ -102,7 +102,16 @@ public class SerialConnection : MonoBehaviour
         {
             throw new ArgumentException("Value '" + value  +"' is no valid Value");
         }
-        stream.WriteLine(setOperationChar + port + ":" + value);
+
+        if (stream.IsOpen)
+        {
+            stream.WriteLine(setOperationChar + port + ":" + value);    
+        }
+        else
+        {
+            Debug.Log("Stream is not open");
+        }
+        
     }
     #endregion
     

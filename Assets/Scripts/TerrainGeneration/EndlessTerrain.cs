@@ -26,6 +26,8 @@ public class EndlessTerrain : MonoBehaviour
 
     private void Start()
     {
+        terrainChunksVisibleLastUpdate.Clear();
+        terrainChunkDictionary.Clear();
         mapGenerator = FindObjectOfType<MapGenerator>();
         maxViewDst = detailLevels[detailLevels.Length - 1].visibleDistanceThreshhold;
         chunksize = MapGenerator.mapChunkSize - 1;
@@ -99,6 +101,7 @@ public class EndlessTerrain : MonoBehaviour
             meshRenderer = meshObject.AddComponent<MeshRenderer>();
             meshFilter = meshObject.AddComponent<MeshFilter>();
             meshCollider = meshObject.AddComponent<MeshCollider>();
+            meshCollider.name = "Ground";
             meshRenderer.material = material;
             meshObject.transform.position = positionV3 * scale;
             meshObject.transform.parent = parent;

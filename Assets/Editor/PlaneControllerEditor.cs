@@ -8,11 +8,13 @@ public class PlaneControllerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
+        
         PlaneController planeController = (PlaneController)target;
-        if (DrawDefaultInspector()) ;
+        DrawDefaultInspector();
         if (GUILayout.Button("AlignHMD"))
         {
             planeController.alignPlaneWithHMD();
         }
+
     }
 }
