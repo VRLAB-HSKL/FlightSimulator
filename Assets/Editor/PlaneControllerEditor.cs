@@ -6,6 +6,9 @@ using UnityEngine;
 [CustomEditor(typeof(PlaneController))]
 public class PlaneControllerEditor : Editor
 {
+    /// <summary>
+    /// Adds a button to align the HMD with the rotation of the cockpit.
+    /// </summary>
     public override void OnInspectorGUI()
     {
         
