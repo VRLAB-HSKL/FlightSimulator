@@ -3,31 +3,95 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Provides a single method for the Mes generation out of a heightmap.
+/// </summary>
 public static class MeshGenerator
 {
-    public static MeshData GenerateTerrainMesh(float[,] heightMap, float heightMapMultiplier,
-        AnimationCurve _heightCurve, int levelOfDetail)
+    /// <summary>
+    /// Generates a Mesh out of the given heightmap
+    /// </summary>
+    /// <param name="heightMap"></param>
+    /// <param name="heightMapMultiplier">Used to scale the mesh</param>
+    /// <param name="_heightCurve"></param>
+    /// <param name="levelOfDetail">The level of detail of the generated Mesh.
+    /// 0 = one vertex per unit
+    /// 1 = one vertex every two units etc.</param>
+    /// <returns>The generated mesh</returns>
+    public static MeshData GenerateTerrainMesh(float[,] heightMap, float heightMapMultiplier, AnimationCurve _heightCurve, int levelOfDetail)
     {
         int meshSimplificationIncrement = (levelOfDetail == 0) ? 1 : levelOfDetail * 2;
-        AnimationCurve heightCurve = new AnimationCurve(_heightCurve.keys);
+        
         int borderedSize = heightMap.GetLength(0);
-        int meshSize = borderedSize - 2*meshSimplificationIncrement;
+        int meshSize = borderedSize - 2 * meshSimplificationIncrement;
         int meshSizeUnsimplified = borderedSize - 2;
+
         float topLeftX = (meshSizeUnsimplified - 1) / -2f;
         float topLeftZ = (meshSizeUnsimplified - 1) / 2f;
-
         
+        AnimationCurve heightCurve = new AnimationCurve(_heightCurve.keys);
+        
+        int[,] vertexIndicesMap = new int[borderedSize, borderedSize];
+        vertexIndicesMap = generateVertexIndexMap(borderedSize, meshSimplificationIncrement, vertexIndicesMap);
+
         int verticesPerLine = (meshSize - 1) / meshSimplificationIncrement + 1;
         MeshData meshData = new MeshData(verticesPerLine);
-
-        int[,] vertexIndicesMap = new int[borderedSize, borderedSize];
-        int meshVertexIndex = 0;
-        int borderVertexIndex = -1;
+        
+        // generate vertices
         for (int y = 0; y < borderedSize; y += meshSimplificationIncrement)
         {
             for (int x = 0; x < borderedSize; x += meshSimplificationIncrement)
             {
-                bool isBorderVertex = y == 0 || y == borderedSize - 1 || x == 0 || x == borderedSize - 1;
+                
+                int vertexIndex = vertexIndicesMap[x, y];
+                //clamp height with the heightcurve
+                float height = heightCurve.Evaluate(heightMap[x, y]);
+                //scale with heightmultiplier
+                height  *= heightMapMultiplier;
+                
+                //calculate uv
+                Vector2 vertexUV = new Vector2((x - meshSimplificationIncrement) / (float) meshSize, (y - meshSimplificationIncrement) / (float) meshSize);
+                
+                //calculate vertex position
+                float posX = topLeftX + vertexUV.x * meshSizeUnsimplified; // uv.x = x / meshsize => uv.x * meshsize = vertex position
+                float posY = topLeftZ - vertexUV.y * meshSizeUnsimplified;
+                Vector3 vertexPosition = new Vector3(posX, height, posY);
+
+                meshData.addVertex(vertexPosition, vertexUV, vertexIndex);
+
+                //if vertex is not a border vertex add triangles for the vertex
+                if (x < borderedSize - 1 && y < borderedSize - 1)
+                {
+                    int a = vertexIndicesMap[x, y];
+                    int b = vertexIndicesMap[x + meshSimplificationIncrement, y];
+                    int c = vertexIndicesMap[x, y + meshSimplificationIncrement];
+                    int d = vertexIndicesMap[x + meshSimplificationIncrement, y + meshSimplificationIncrement];
+                    meshData.addTriangle(a, d, c);
+                    meshData.addTriangle(d, a, b);
+                }
+                vertexIndex++;
+            }
+        }
+        meshData.BakeNormals();
+        return meshData;
+    }
+
+    /// <summary>
+    /// Generates a index map. If Index[x,y] is a border vertex aka on the edge of the map, Indexmap[x,y] = -1 else 0
+    /// </summary>
+    /// <param name="size"></param>
+    /// <param name="meshSimplificationIncrement">Amount of vertices skipped per step</param>
+    /// <param name="vertexIndicesMap"></param>
+    /// <returns>VertexIndicesMap</returns>
+    private static int[,] generateVertexIndexMap(int size, int meshSimplificationIncrement, int[,] vertexIndicesMap)
+    {
+        int meshVertexIndex = 0;
+        int borderVertexIndex = -1;
+        for (int y = 0; y < size; y += meshSimplificationIncrement)
+        {
+            for (int x = 0; x < size; x += meshSimplificationIncrement)
+            {
+                bool isBorderVertex = y == 0 || y == size - 1 || x == 0 || x == size - 1;
 
                 if (isBorderVertex)
                 {
@@ -42,34 +106,7 @@ public static class MeshGenerator
             }
         }
 
-        for (int y = 0; y < borderedSize; y += meshSimplificationIncrement)
-        {
-            for (int x = 0; x < borderedSize; x += meshSimplificationIncrement)
-            {
-                int vertexIndex = vertexIndicesMap[x, y];
-                Vector2 percent = new Vector2((x - meshSimplificationIncrement) / (float) meshSize,
-                    (y - meshSimplificationIncrement) / (float) meshSize);
-                float height = heightCurve.Evaluate(heightMap[x, y]) * heightMapMultiplier;
-                Vector3 vertexPosition =
-                    new Vector3(topLeftX + percent.x * meshSizeUnsimplified, height, topLeftZ - percent.y * meshSizeUnsimplified);
-
-                meshData.addVertex(vertexPosition,percent,vertexIndex);
-                
-                if (x < borderedSize - 1 && y < borderedSize - 1)
-                {
-                    int a = vertexIndicesMap[x, y];
-                    int b = vertexIndicesMap[x + meshSimplificationIncrement, y];
-                    int c = vertexIndicesMap[x, y + meshSimplificationIncrement];
-                    int d = vertexIndicesMap[x + meshSimplificationIncrement, y + meshSimplificationIncrement];
-                    meshData.addTriangle(a, d, c);
-                    meshData.addTriangle(d, a, b);
-                }
-
-                vertexIndex++;
-            }
-        }
-        meshData.BakeNormals();
-        return meshData;
+        return vertexIndicesMap;
     }
 }
 
@@ -127,6 +164,7 @@ public class MeshData
         }
     }
 
+    //custom method is required to fix the lightning gap between meshes
     Vector3[] CalculateNormals()
     {
         Vector3[] vertexNormals = new Vector3[vertices.Length];
@@ -153,7 +191,7 @@ public class MeshData
             int vertexIndexC = borderTriangles[normalTriangleIndex + 2];
 
             Vector3 triangleNormal = SurfaceNormalFromIndices(vertexIndexA, vertexIndexB, vertexIndexC);
-            
+
             if (vertexIndexA >= 0)
                 vertexNormals[vertexIndexA] += triangleNormal;
             if (vertexIndexB >= 0)
@@ -173,9 +211,9 @@ public class MeshData
 
     Vector3 SurfaceNormalFromIndices(int indexA, int indexB, int indexC)
     {
-        Vector3 pointA = (indexA < 0)? borderVertices[-indexA - 1] : vertices[indexA];
-        Vector3 pointB = (indexB < 0)? borderVertices[-indexB - 1] : vertices[indexB];
-        Vector3 pointC = (indexC < 0)? borderVertices[-indexC - 1] : vertices[indexC];
+        Vector3 pointA = (indexA < 0) ? borderVertices[-indexA - 1] : vertices[indexA];
+        Vector3 pointB = (indexB < 0) ? borderVertices[-indexB - 1] : vertices[indexB];
+        Vector3 pointC = (indexC < 0) ? borderVertices[-indexC - 1] : vertices[indexC];
 
         Vector3 sideAB = pointB - pointA;
         Vector3 sideAC = pointC - pointA;

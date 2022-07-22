@@ -256,7 +256,7 @@ public class FlightPhysics : MonoBehaviour
         // The total torque is multiplied by the forward speed, so the controls have more effect at high speed,
         // and little effect at low speed, or when not moving in the direction of the nose of the plane
         // (i.e. falling while stalled)
-        m_Rigidbody.AddTorque(torque * ForwardSpeed * m_AeroFactor);
+        m_Rigidbody.AddTorque(torque * (ForwardSpeed * m_AeroFactor));
     }
 
 
