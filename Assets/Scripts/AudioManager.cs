@@ -4,10 +4,20 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
+    public enum Source
+    {
+        ENGINE,
+        FRONT,
+        LEFT,
+        RIGHT
+    }
     #region variables
 
     public Sound[] sounds;
     public AudioSource engine;
+    public AudioSource front;
+    public AudioSource left;
+    public AudioSource right;
 
     #endregion
 
@@ -29,7 +39,7 @@ public class AudioManager : MonoBehaviour
 
     #region methods
 
-    public void Play(string name)
+    public void Play(Source source, string name, bool loop)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name); // find the right sound, where sound is equal to the used name
         if (s == null)
@@ -38,14 +48,61 @@ public class AudioManager : MonoBehaviour
             
         }
         //s.source.Play();
-        engine.clip = s.clip;
-        engine.Play();
         
+        switch (source)
+        {
+            case Source.ENGINE:
+                engine.clip = s.clip;
+                engine.loop = loop;
+                engine.Play();
+                break;
+            case Source.FRONT:
+                front.clip = s.clip;
+                front.loop = loop;
+                front.Play();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(source), source, null);
+        }
     }
 
-    public void Stop(string name)
+    public string isPlaying(Source source)
     {
-        engine.Stop();
+        switch (source)
+        {
+            case Source.ENGINE:
+                if (engine.isPlaying)
+                {
+                    return engine.clip.name;
+                }
+                break;
+            case Source.FRONT:
+                if (front.isPlaying)
+                {
+                    return front.clip.name;
+                }
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(source), source, null);
+        }
+
+        return "";
+    }
+    
+
+    public void Stop(Source source)
+    {
+        switch (source)
+        {
+            case Source.ENGINE:
+                engine.Stop();
+                break;
+            case Source.FRONT:
+                front.Stop();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(source), source, null);
+        }
         /*
         Sound s = Array.Find(sounds, sound => sound.name == name); // find the right sound, where sound is equal to the used name
         if (s == null)

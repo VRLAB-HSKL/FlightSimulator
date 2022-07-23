@@ -17,12 +17,5 @@ public class runwayEngineAudio : MonoBehaviour
     {
     }
     */
-
-    // Update is called once per frame
-    void Update()
-    {
-     am.Play("RunwayEngineSound");
-     
-    }
-# endregion
+    # endregion
 }

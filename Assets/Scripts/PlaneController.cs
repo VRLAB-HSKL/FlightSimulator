@@ -56,7 +56,7 @@ public class PlaneController : MonoBehaviour
     {
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
-        //FindObjectOfType<AudioManager>().Play("StartWithoutEnginePower");
+        FindObjectOfType<AudioManager>().Play(AudioManager.Source.ENGINE,"StartWithoutEnginePower", true);
     }
     
     void FixedUpdate()
@@ -220,9 +220,9 @@ public class PlaneController : MonoBehaviour
     {
         if (other.name == "Ground")
         {
-            FindObjectOfType<AudioManager>().Play("Crash");    
+            
+            FindObjectOfType<AudioManager>().Play(AudioManager.Source.FRONT,"Crash", false);    
         }
-        
     }
 
     public void alignPlaneWithHMD()
