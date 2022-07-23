@@ -274,9 +274,12 @@ public class FlightPhysics : MonoBehaviour
         RaycastHit hit;
         Altitude = Physics.Raycast(ray, out hit) ? hit.distance + 10 : transform.position.y;
     }
-    
-    
-    
+
+
+    public float getCurrentSpeedInPercent()
+    {
+        return EnginePower / m_MaxEnginePower;
+    }
 
 
     // Immobilize can be called from other objects, for example if this plane is hit by a weapon and should become uncontrollable
