@@ -103,7 +103,7 @@ public class PlaneController : MonoBehaviour
 
     private void updateRotationMotors()
     {
-        Vector3 currentRotation = jetBody.rotation.eulerAngles;
+        Vector3 currentRotation = jetBody.gameObject.transform.localRotation.eulerAngles;
         float zAxis = currentRotation.z;
         m_MotorController.disableMotor2();
         m_MotorController.disableMotor3();
@@ -139,7 +139,7 @@ public class PlaneController : MonoBehaviour
         float g = ForceCalculator.calculateGForce(velocityLastMotorUpdate, currentVelocity, motorUpdateInterval);
 
         velocityLastMotorUpdate = currentVelocity;
-        Debug.Log($"Current Gs: {g}");
+        //Debug.Log($"Current Gs: {g}");
 
         if (g > 0.3f)
         {
@@ -218,7 +218,11 @@ public class PlaneController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        FindObjectOfType<AudioManager>().Play("Crash");
+        if (other.name == "Ground")
+        {
+            FindObjectOfType<AudioManager>().Play("Crash");    
+        }
+        
     }
 
     public void alignPlaneWithHMD()

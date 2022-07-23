@@ -115,6 +115,9 @@ public class FlightPhysics : MonoBehaviour
         ThrottleInput = Mathf.Clamp(ThrottleInput, -1, 1);
     }
 
+    /// <summary>
+    /// Calculates the current roll angle
+    /// </summary>
 
     private void CalculateRollAndPitchAngles()
     {
@@ -137,11 +140,12 @@ public class FlightPhysics : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Adjusts the pitch input slightly to level the plane if the input is zero.
+    /// </summary>
     private void AutoLevel()
     {
         // The banked turn amount (between -1 and 1) is the sine of the roll angle.
-        // this is an amount applied to elevator input if the user is only using the banking controls,
-        // because that's what people expect to happen in games!
         m_BankedTurnAmount = Mathf.Sin(RollAngle);
         // auto level roll, if there's no roll input:
         if (RollInput == 0f)
@@ -158,6 +162,9 @@ public class FlightPhysics : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Gets the current forward speed.
+    /// </summary>
     private void CalculateForwardSpeed()
     {
         // Forward speed is the speed in the planes's forward direction (not the same as its velocity, eg if falling in a stall)
@@ -166,27 +173,26 @@ public class FlightPhysics : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Calculates the current Engine power based on throttle input.
+    /// </summary>
     private void ControlThrottle()
     {
-        // override throttle if immobilized
-        if (m_Immobilized)
-        {
-            ThrottleInput = -0.5f;
-        }
-
-        
-        // Adjust throttle based on throttle input (or immobilized state)
-        Throttle = Mathf.Clamp01(Throttle + ThrottleInput * Time.deltaTime * m_ThrottleChangeSpeed);
+        float throttleValue= Throttle + ThrottleInput * Time.deltaTime * m_ThrottleChangeSpeed;
+        Throttle = Mathf.Clamp01(throttleValue);
         // current engine power is just:
         EnginePower = Throttle * m_MaxEnginePower;
     }
 
 
+    /// <summary>
+    /// Calculates drag based on the set increase factors.
+    /// </summary>
     private void CalculateDrag()
     {
-        // increase the drag based on speed, since a constant drag doesn't seem "Real" (tm) enough
+        // increase the drag based on speed
         float extraDrag = m_Rigidbody.velocity.magnitude * m_DragIncreaseFactor;
-        // Air brakes work by directly modifying drag. This part is actually pretty realistic!
+        // Air brakes work by directly modifying drag
         m_Rigidbody.drag = (AirBrakes ? (m_OriginalDrag + extraDrag) * m_AirBrakesEffect : m_OriginalDrag + extraDrag);
         // Forward speed affects angular drag - at high forward speed, it's much harder for the plane to spin
         m_Rigidbody.angularDrag = m_OriginalAngularDrag * ForwardSpeed / 10;

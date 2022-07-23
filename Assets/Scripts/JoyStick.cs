@@ -19,13 +19,30 @@ public class JoyStick : MonoBehaviour
     public ControllerButton trackingActivationButton = ControllerButton.Trigger;
     public float range;
     public float tolerance = 0.5f;
-   
+    public Transform flightStickModel;
+
+    private Quaternion zeroPositionQ;
     private Vector3 zeroPosition;
     private Vector2 delta;
     private Vector3 zeroAxisRotation;
     private Vector3 zeroAngle;
+    private Quaternion flightStickModelZeroRotation;
+
+    #region Debug
+
+    private float timesincelastlog = 0f;
+    private float timebetweenlogs = 1f;
+
+    #endregion
+
+    private void Start()
+    {
+        flightStickModelZeroRotation = flightStickModel.localRotation;
+        range = Mathf.Abs(range) * -1;
+    }
 
     private void Update()
+    
     {
         if (ViveInput.GetPressDown(role, trackingActivationButton))
         {
@@ -35,21 +52,27 @@ public class JoyStick : MonoBehaviour
         if (ViveInput.GetPressUp(role, trackingActivationButton))
         {
             endTracking();
+            flightStickModel.localRotation = flightStickModelZeroRotation;
         }
 
         if (tracking)
         {
             calculateRelativePosition();
+            updateStickModel();
         }
 
+    }
+
+    private void updateStickModel()
+    {
+        flightStickModel.localRotation = VivePose.GetPose(role).rot;
     }
 
 
     void startTracking()
     {
         tracking = true;
-        Quaternion q = controllerTransform.localRotation;
-        zeroPosition = q.eulerAngles;
+        zeroPositionQ = VivePose.GetPose(role).rot;
     }
 
     void endTracking()
@@ -59,35 +82,38 @@ public class JoyStick : MonoBehaviour
         
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
     private void calculateRelativePosition()
     {
-        Quaternion current = controllerTransform.localRotation;
-        Vector3 currentEuler = current.eulerAngles;
-        Vector3 deltaV3 = zeroPosition - currentEuler;
-        float deltaX = deltaV3.x;
-        float deltaY = deltaV3.z;
-        if (deltaX > 180) deltaX -= 360;
-        if (deltaX < -180) deltaX += 360;
+        // flight stick x has a range from -180 to 0
+        Quaternion current = VivePose.GetPose(role).rot;  //controllerTransform.rotation;
+        Quaternion differenceInRotation = Quaternion.Inverse(current)*zeroPositionQ;
 
-        if (deltaY > 180) deltaY -= 360;
-        if (deltaY < -180) deltaY += 360;
+        Vector3 euler = differenceInRotation.eulerAngles;
+        
 
-        Mathf.Clamp(deltaX, -90, 90);
-        Mathf.Clamp(deltaY, -90, 90);
-        if (delta.x > -tolerance && delta.x < tolerance)
+        if (euler.x > 180) euler.x -= 360;
+        if (euler.y > 180) euler.y -= 360;
+        
+        delta.x = euler.x;
+        delta.y = euler.y;
+    }
+    
+
+    private void logToConsole(Vector3 currentEuler)
+    {
+        timesincelastlog += Time.deltaTime;
+        if (timesincelastlog > timebetweenlogs)
         {
-            delta.x = 0;
+            timesincelastlog = 0f;
+            Debug.Log("Euler: " + currentEuler);
         }
-        if (delta.y > -tolerance && delta.y < tolerance)
-        {
-            delta.y = 0;
-        }
-        delta.x = deltaX;
-        delta.y = deltaY;
     }
 
     public Vector2 getRelativePosition()
-    {
+    { 
         return new Vector2(delta.x/range, delta.y/range);
     }
     

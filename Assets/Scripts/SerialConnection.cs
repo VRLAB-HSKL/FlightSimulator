@@ -110,7 +110,7 @@ public class SerialConnection : MonoBehaviour
         }
         else
         {
-            Debug.Log("Stream is not open");
+            //Debug.Log("Stream is not open");
         }
         
     }
