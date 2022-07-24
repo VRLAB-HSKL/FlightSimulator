@@ -202,7 +202,7 @@ public class PlaneController : MonoBehaviour
         float zAxis = currentRotation.z;
         m_MotorController.disableMotor2();
         m_MotorController.disableMotor3();
-
+        Debug.Log(flightPhysics.RollAngle);
         if (zAxis > 45 && zAxis < 135)
         {
             //left
