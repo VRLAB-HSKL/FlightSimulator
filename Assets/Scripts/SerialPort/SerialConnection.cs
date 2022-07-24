@@ -127,6 +127,9 @@ public class SerialConnection : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Resets all ports on the arduino board to 0.
+    /// </summary>
     public static void resetAll()
     {
         stream.WriteLine("r");
