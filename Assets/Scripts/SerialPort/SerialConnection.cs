@@ -103,16 +103,33 @@ public class SerialConnection : MonoBehaviour
         {
             throw new ArgumentException("Port '" + port +"' is no valid port");
         }
-        
+
+        int valueNumber;
+        switch (value)
+        {
+            case State.LOW:
+                valueNumber = 0;
+                break;
+            case State.HIGH:
+                valueNumber = 1;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(value), value, null);
+        }
         if (stream.IsOpen)
         {
-            stream.WriteLine(setOperationChar + port + ":" + value);    
+            stream.WriteLine(setOperationChar + port + ":" + valueNumber);    
         }
         else
         {
-            //Debug.Log("Stream is not open");
+            Debug.Log("Stream is not open");
         }
         
+    }
+
+    public static void resetAll()
+    {
+        stream.WriteLine("r");
     }
     #endregion
     

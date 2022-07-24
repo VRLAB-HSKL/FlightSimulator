@@ -83,5 +83,10 @@ public class MotorController : MonoBehaviour
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, LOW);
         SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, LOW);
     }
+
+    public void disableAllMotors()
+    {
+        SerialConnection.resetAll();
+    }
     #endregion
 }

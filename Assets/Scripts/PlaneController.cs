@@ -56,6 +56,7 @@ public class PlaneController : MonoBehaviour
     {
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
+        audioManager.setVolume("highSpeedSound", 0f);
     }
     
     void FixedUpdate()
@@ -188,45 +189,14 @@ public class PlaneController : MonoBehaviour
         timeSinceLastMotorUpdate += Time.deltaTime;
         if (timeSinceLastMotorUpdate >= motorUpdateInterval)
         {
-            timeSinceLastMotorUpdate = 0f;
             
+            timeSinceLastMotorUpdate = 0f;
+            m_MotorController.disableAllMotors();
             updateForwardGForce();
             updateRotationMotors();
         }
         
     }
-
-    private void updateRotationMotors()
-    {
-        Vector3 currentRotation = jetBody.gameObject.transform.localRotation.eulerAngles;
-        float zAxis = currentRotation.z;
-        m_MotorController.disableMotor2();
-        m_MotorController.disableMotor3();
-        Debug.Log(flightPhysics.RollAngle);
-        if (zAxis > 45 && zAxis < 135)
-        {
-            //left
-            m_MotorController.setMotor2();
-            m_MotorController.resetMotor3();
-        }
-
-        if (zAxis < -45 && zAxis > -135)
-        {
-            //right
-            m_MotorController.setMotor3();
-            m_MotorController.resetMotor2();
-        }
-
-        if (zAxis > 135 || zAxis < -135)
-        {
-            //topdown
-            m_MotorController.setMotor2();
-            m_MotorController.setMotor3();
-        }
-
-        
-    }
-
     private void updateForwardGForce()
     {
         
@@ -244,14 +214,36 @@ public class PlaneController : MonoBehaviour
         {
             m_MotorController.resetMotor1();
         }
-        else
-        {
-            m_MotorController.disableMotor1();
-        }
+        
         
     }
 
+    private void updateRotationMotors()
+    {
+        Vector3 currentRotation = jetBody.gameObject.transform.localRotation.eulerAngles;
+        float zAxis = currentRotation.z;
+        Debug.Log(zAxis);
+        if (zAxis > 25 && zAxis < 115)
+        {
+            //left
+            m_MotorController.setMotor2();
+            m_MotorController.resetMotor3();
+        }
 
+        if (zAxis < 335 && zAxis > 245)
+        {
+            //right
+            m_MotorController.setMotor3();
+            m_MotorController.resetMotor2();
+        }
+
+        if (zAxis > 115 && zAxis < 245)
+        {
+            //topdown
+            m_MotorController.setMotor2();
+            m_MotorController.setMotor3();
+        }
+    }
     #endregion
     
     

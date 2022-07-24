@@ -213,28 +213,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbfd31aaac017204885fcc03f0579a1a, type: 3}
---- !u!1 &2253824373723855542 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 125382, guid: cbfd31aaac017204885fcc03f0579a1a,
-    type: 3}
-  m_PrefabInstance: {fileID: 2253824373723796336}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &282750450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2253824373723855542}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae8582563e58c9847b0123ccf727e38c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tracking: 0
-  role: 0
-  tolerance: 5
-  trackingActivationButton: 0
 --- !u!1001 &2253824374597985812
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -355,7 +333,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 1c6403442b4f92e4c8f6084a1f8bd960,
         type: 3}
       propertyPath: m_Name
-      value: Cockpit
+      value: Cockpit Variant
       objectReference: {fileID: 0}
     - target: {fileID: 1528999829432841617, guid: 1c6403442b4f92e4c8f6084a1f8bd960,
         type: 3}
@@ -443,13 +421,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joyStick: {fileID: 307045867}
   throttle: {fileID: 307045866}
-  accelerationPerSecond: 20
-  maxSpeedPerSec: 343
+  flightPhysics: {fileID: 0}
+  m_MotorController: {fileID: 0}
   throttleObject: {fileID: 2912945672022831972}
   flightStickObject: {fileID: 2744352726317096505}
-  currentSpeed: 0
-  speedGoal: 0
-  aligned: 0
+  motorUpdateInterval: 0.25
+  audioManager: {fileID: 0}
 --- !u!114 &307045866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -465,6 +442,9 @@ MonoBehaviour:
   tracking: 0
   role: 1
   trackingActivationButton: 0
+  rangeInMeters: 0
+  currentPercentage: 0
+  invert: 1
 --- !u!114 &307045867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -479,5 +459,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tracking: 0
   role: 0
-  tolerance: 5
+  controllerTransform: {fileID: 0}
   trackingActivationButton: 0
+  range: 0
+  tolerance: 5
+  flightStickModel: {fileID: 0}
+--- !u!114 &1902361411760180219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406909249875516229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecc134ff16856ff4f98d02ef364500d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MaxEnginePower: 40
+  m_Lift: 0.002
+  m_ZeroLiftSpeed: 300
+  m_RollEffect: 1
+  m_PitchEffect: 1
+  m_YawEffect: 0.2
+  m_BankedTurnEffect: 0.5
+  m_AerodynamicEffect: 0.02
+  m_AutoTurnPitch: 0.5
+  m_AutoRollLevel: 0.2
+  m_AutoPitchLevel: 0.2
+  m_AirBrakesEffect: 3
+  m_ThrottleChangeSpeed: 0.3
+  m_DragIncreaseFactor: 0.001
+  Throttle: 0
+  AirBrakes: 0
+  m_Rigidbody: {fileID: 0}
