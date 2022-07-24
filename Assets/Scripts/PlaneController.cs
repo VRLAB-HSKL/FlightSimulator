@@ -200,8 +200,7 @@ public class PlaneController : MonoBehaviour
     #region Private_Functions
     private void updateHotasModel()
     {
-//        adjustFlightStickModel(delta);
-        
+        adjustFlightStickModel(delta);
         throttleObject.transform.localRotation = Quaternion.Euler(new Vector3(calculateThrottleAdjustmentAngle(throttle.getThrottleValue()),0,0));
     }
 
@@ -234,7 +233,7 @@ public class PlaneController : MonoBehaviour
             flightStickadjustment.y = rotatedFlightStickVector3.y;
             flightStickadjustment.z = flightStickadjustment.y * (-1);
         }
-        flightStickObject.transform.localRotation = Quaternion.Euler(flightStickadjustment);
+        flightStickObject.transform.rotation = Quaternion.Euler(flightStickadjustment);
     }
 
     #endregion

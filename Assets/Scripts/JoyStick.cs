@@ -65,7 +65,11 @@ public class JoyStick : MonoBehaviour
 
     private void updateStickModel()
     {
-        flightStickModel.localRotation = VivePose.GetPose(role).rot;
+        /*
+        Quaternion current = VivePose.GetPose(role).rot;  //controllerTransform.rotation;
+        Quaternion differenceInRotation = Quaternion.Inverse(current) * flightStickModelZeroRotation;
+        flightStickModel.localRotation = differenceInRotation;
+        */
     }
 
 
