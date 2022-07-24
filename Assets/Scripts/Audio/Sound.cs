@@ -16,6 +16,8 @@ public class Sound
 
     public bool loop;
     
+    public GameObject parent;
+    
     [HideInInspector] // Not visible in inspector mode
     public AudioSource source;
 }

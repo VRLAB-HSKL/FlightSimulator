@@ -1,12 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using HTC.UnityPlugin.Vive;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Valve.VR;
-using Valve.VR.InteractionSystem;
-using static AudioManager.Source;
+
+
 
 
 [RequireComponent(typeof(JoyStick))]
@@ -60,37 +56,46 @@ public class PlaneController : MonoBehaviour
     {
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
-        audioManager.Play(ENGINE,"StartWithoutEnginePower", true);
     }
     
     void FixedUpdate()
     {
-        
         updatePlane();
 
         updateHotasModel();
-
-        updateMotionSeat();
-
+        
         updateSound();
 
+        updateMotionSeat();
     }
-
-    private void updateSound()
+    private void OnCollisionStay(Collision other)
     {
-        if (!isFlying) return;
-        if (flightPhysics.getCurrentSpeedInPercent() >= 0.95f)
+        if (other.gameObject.name == "runway1")
         {
-            audioManager.Stop(ENGINE);
-            audioManager.Play(ENGINE, "highSpeedSound", true);
-        }
-        else if (flightPhysics.getCurrentSpeedInPercent() < throttle.getThrottleValue())
-        {
-            audioManager.Stop(ENGINE);
-            audioManager.Play(ENGINE, "Accelerate", true);
+            if (throttle.getThrottleValue() == 0)
+            {
+                jetBody.angularDrag = 0f;
+                jetBody.drag = 0f;
+                jetBody.velocity = Vector3.zero;
+                jetBody.angularVelocity = Vector3.zero;
+            }
+            
         }
     }
 
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.name == "Ground")
+        {
+            audioManager.Play("crash");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
+
+    #endregion
+    
+    
+    
     private void updatePlane()
     {
         float pitchPercentage = 0f;
@@ -110,8 +115,73 @@ public class PlaneController : MonoBehaviour
         float convertedThrottle = (throttleValue * 2) - 1;
         flightPhysics.Move(rollPercentage, pitchPercentage, 0f, convertedThrottle, true);
     }
+    
+  
+    
+    #region ModelUpdate
+    
+    private void updateHotasModel()
+    {
+        adjustFlightStickModel(delta);
+        throttleObject.transform.localRotation = Quaternion.Euler(new Vector3(calculateThrottleAdjustmentAngle(throttle.getThrottleValue()),0,0));
+    }
+    
+    private float calculateThrottleAdjustmentAngle(float throttleValue)
+    {
+        return ((180 * throttleValue) -180);
+    }
+
+    private void adjustFlightStickModel(Vector3 rotatedFlightStickVector3)
+    {
+        Vector3 flightStickadjustment;
+        if (rotatedFlightStickVector3.x != 0 && rotatedFlightStickVector3.y == 0)  // only x axis is involved
+        {
+            flightStickadjustment.x = (-90 + rotatedFlightStickVector3.x);
+            flightStickadjustment.y = 0;
+            flightStickadjustment.z = 0;
+            
+        } else if (rotatedFlightStickVector3.x == 0 && rotatedFlightStickVector3.y != 0) // only y axis is involved
+        {
+            flightStickadjustment.x = (-90 + rotatedFlightStickVector3.y);
+            flightStickadjustment.y = 90;
+            flightStickadjustment.z = -90;
+        }
+        else // x and y axis participate 
+        {
+            flightStickadjustment.x = (-90 + rotatedFlightStickVector3.x);
+            flightStickadjustment.y = rotatedFlightStickVector3.y;
+            flightStickadjustment.z = flightStickadjustment.y * (-1);
+        }
+        flightStickObject.transform.rotation = Quaternion.Euler(flightStickadjustment);
+    }
+    
+    #endregion
+    
+    
+    
+    private void updateSound()
+    {
+        //if plane is still on the ground the default sound will play
+        if (!isFlying)
+        {
+            if (!audioManager.isPlaying("idle"))
+            {
+                audioManager.Play("idle");    
+            }
+            return;
+        }
+        if (throttle.getThrottleValue() > flightPhysics.Throttle && flightPhysics.getCurrentSpeedInPercent() < 0.95f)
+        {
+            audioManager.Play("accelerate");
+        }
+        if(!audioManager.isPlaying("highSpeedSound")) audioManager.Play("highSpeedSound");
+        
+        audioManager.setVolume("highSpeedSound", flightPhysics.getCurrentSpeedInPercent());
+    }
 
     
+    
+    #region Motorupdates
 
     private void updateMotionSeat()
     {
@@ -169,77 +239,23 @@ public class PlaneController : MonoBehaviour
         if (g > 0.3f)
         {
             m_MotorController.setMotor1();
-            //play sound accelerate
-            //FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
-            //FindObjectOfType<AudioManager>().Play("Accelerate");
         }
         else if (g < -0.3f)
         {
             m_MotorController.resetMotor1();
-            //play sound decelerate
-            /*
-            FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
-            FindObjectOfType<AudioManager>().Play("brake");
-            */
         }
         else
         {
             m_MotorController.disableMotor1();
-            //play default
-            /*
-             * FindObjectOfType<AudioManager>().Stop("StartWithoutEnginePower");
-            FindObjectOfType<AudioManager>().Play("normalSpeedSound");
-             */
-            
         }
         
     }
 
-    #endregion
-
-    #region Private_Functions
-    private void updateHotasModel()
-    {
-        adjustFlightStickModel(delta);
-        throttleObject.transform.localRotation = Quaternion.Euler(new Vector3(calculateThrottleAdjustmentAngle(throttle.getThrottleValue()),0,0));
-    }
-
-
-    #region modelUpdate
-
-    private float calculateThrottleAdjustmentAngle(float throttleValue)
-    {
-        return ((-90 * throttleValue) -90); // Calculate Angle of Throttle
-    }
-
-    private void adjustFlightStickModel(Vector3 rotatedFlightStickVector3)
-    {
-        Vector3 flightStickadjustment;
-        if (rotatedFlightStickVector3.x != 0 && rotatedFlightStickVector3.y == 0)  // only x axis is involved
-        {
-            flightStickadjustment.x = (-90 + rotatedFlightStickVector3.x);
-            flightStickadjustment.y = 0;
-            flightStickadjustment.z = 0;
-            
-        } else if (rotatedFlightStickVector3.x == 0 && rotatedFlightStickVector3.y != 0) // only y axis is involved
-        {
-            flightStickadjustment.x = (-90 + rotatedFlightStickVector3.y);
-            flightStickadjustment.y = 90;
-            flightStickadjustment.z = -90;
-        }
-        else // x and y axis participate 
-        {
-            flightStickadjustment.x = (-90 + rotatedFlightStickVector3.x);
-            flightStickadjustment.y = rotatedFlightStickVector3.y;
-            flightStickadjustment.z = flightStickadjustment.y * (-1);
-        }
-        flightStickObject.transform.rotation = Quaternion.Euler(flightStickadjustment);
-    }
 
     #endregion
     
-    #endregion
-
+    
+    
     public void alignPlaneWithHMD()
     {
         
@@ -256,30 +272,6 @@ public class PlaneController : MonoBehaviour
         cameraZeroRotation = player.transform.rotation;
     }
     
-    private void OnCollisionStay(Collision other)
-    {
-        if (other.gameObject.name == "runway1")
-        {
-            if (throttle.getThrottleValue() == 0)
-            {
-                jetBody.angularDrag = 0f;
-                jetBody.drag = 0f;
-                jetBody.velocity = Vector3.zero;
-                jetBody.angularVelocity = Vector3.zero;
-            }
-            
-        }
-    }
-
-    private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject.name == "Ground")
-        {
-            audioManager.Play(FRONT,"Crash", false);    
-            audioManager.Stop(ENGINE);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            
-        }
-    }
+   
 }// End class
 

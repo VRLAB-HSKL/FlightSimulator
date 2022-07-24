@@ -24,9 +24,8 @@ public class FlightPhysics : MonoBehaviour
     [SerializeField] private float m_ThrottleChangeSpeed = 0.3f; // The speed with which the throttle changes.
     [SerializeField] private float m_DragIncreaseFactor = 0.001f; // how much drag should increase with speed.
 
-    public float Altitude { get; private set; } // The aeroplane's height above the ground. Currently unused
-    public float Throttle { get; private set; } // The amount of throttle being used.
-    public bool AirBrakes { get; private set; } // Whether or not the air brakes are being applied.
+    public float Throttle; // The amount of throttle being used.
+    public bool AirBrakes; // Whether or not the air brakes are being applied.
     public float ForwardSpeed { get; private set; } // How fast the aeroplane is traveling in it's forward direction.
     public float EnginePower { get; private set; } // How much power the engine is being given.
 
@@ -99,9 +98,6 @@ public class FlightPhysics : MonoBehaviour
         CalculateLinearForces();
 
         CalculateTorque();
-
-        CalculateAltitude();
-        
     }
 
 
@@ -266,19 +262,20 @@ public class FlightPhysics : MonoBehaviour
     }
 
 
-    private void CalculateAltitude()
+    private float CalculateAltitude()
     {
         // Altitude calculations - we raycast downwards from the aeroplane
         // starting a safe distance below the plane to avoid colliding with any of the plane's own colliders
         var ray = new Ray(transform.position - Vector3.up * 10, -Vector3.up);
         RaycastHit hit;
-        Altitude = Physics.Raycast(ray, out hit) ? hit.distance + 10 : transform.position.y;
+        return Physics.Raycast(ray, out hit) ? hit.distance + 10 : transform.position.y;
     }
 
 
     public float getCurrentSpeedInPercent()
     {
-        return EnginePower / m_MaxEnginePower;
+        
+        return   EnginePower / m_MaxEnginePower;
     }
 
 
