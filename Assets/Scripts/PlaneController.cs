@@ -69,6 +69,9 @@ public class PlaneController : MonoBehaviour
 
         updateMotionSeat();
     }
+
+    #region colliders
+
     private void OnCollisionStay(Collision other)
     {
         if (other.gameObject.name == "runway1")
@@ -95,7 +98,7 @@ public class PlaneController : MonoBehaviour
 
     #endregion
     
-    
+    #endregion
     
     private void updatePlane()
     {

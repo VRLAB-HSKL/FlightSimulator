@@ -96,6 +96,9 @@ public class EndlessTerrain : MonoBehaviour
 
     #region Classes
 
+    /// <summary>
+    /// The generated terrain is seperated into chunks. These get enabled or disabled based on the distance to the viewer.
+    /// </summary>
     public class TerrainChunk
     {
         private GameObject meshObject;
@@ -131,6 +134,7 @@ public class EndlessTerrain : MonoBehaviour
 
             lodMeshes = new LODMesh[detailLevels.Length];
 
+            // figure out which lod gets used for collider generation
             for (int i = 0; i < detailLevels.Length; i++)
             {
                 lodMeshes[i] = new LODMesh(detailLevels[i].levelOfDetail, updateTerrainChunk);
@@ -143,28 +147,20 @@ public class EndlessTerrain : MonoBehaviour
             mapGenerator.RequestMapData(position, OnMapDataReceived);
         }
 
-        void OnMapDataReceived(MapData mapData)
-        {
-            this.mapData = mapData;
-            mapDataReceived = true;
-
-            Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap, MapGenerator.mapChunkSize,
-                MapGenerator.mapChunkSize);
-            meshRenderer.material.mainTexture = texture;
-            updateTerrainChunk();
-        }
-
-        //enable or disable meshobject based on viewdistance
+        /// <summary>
+        /// Sets the Chunk visible based on Distance to viewer. Also requests the mesh for the chunk if it not already has one.
+        /// </summary>
         public void updateTerrainChunk()
         {
             if (mapDataReceived)
             {
                 float viewerDistanceFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
                 bool visible = viewerDistanceFromNearestEdge <= maxViewDst;
-
+                //only show if viewer is close enough
                 if (visible)
                 {
                     int lodIndex = 0;
+                    //set the level of detail based on viewer distance
                     for (int i = 0; i < detailLevels.Length - 1; i++)
                     {
                         if (viewerDistanceFromNearestEdge > detailLevels[i].visibleDistanceThreshhold)
@@ -177,6 +173,8 @@ public class EndlessTerrain : MonoBehaviour
                         }
                     }
 
+                    
+                    //update mesh if the lod changed
                     if (lodIndex != previousLODIndex)
                     {
                         LODMesh lodMesh = lodMeshes[lodIndex];
@@ -191,6 +189,7 @@ public class EndlessTerrain : MonoBehaviour
                         }
                     }
 
+                    //if lod is highest possible add a collider to the mesh
                     if (lodIndex == 0)
                     {
                         if (collisionLodMesh.hasMesh)
@@ -208,6 +207,16 @@ public class EndlessTerrain : MonoBehaviour
 
                 setVisible(visible);
             }
+        }
+        void OnMapDataReceived(MapData mapData)
+        {
+            this.mapData = mapData;
+            mapDataReceived = true;
+
+            Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap, MapGenerator.mapChunkSize,
+                MapGenerator.mapChunkSize);
+            meshRenderer.material.mainTexture = texture;
+            updateTerrainChunk();
         }
 
         public void setVisible(bool visible)

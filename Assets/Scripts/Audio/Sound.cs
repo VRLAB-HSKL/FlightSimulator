@@ -16,7 +16,7 @@ public class Sound
 
     public bool loop;
     
-    public GameObject parent;
+    public GameObject parent; // parent to which the audio source gets appended
     
     [HideInInspector] // Not visible in inspector mode
     public AudioSource source;
