@@ -6,12 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Intro.unity
+    guid: 7ca92ecc0d8e348499662ca26a7408e3
+  - enabled: 1
     path: Assets/Scenes/Main.unity
     guid: a5f40547cbdd11a428516061791d9663
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260,
       type: 2}
-    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: fb4b23d5f1479004ebd3089fb423d42c,
+    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: e0fcfbc7c15b67849850ab6f709cddae,
       type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: dc5a169419fa04987b057f65238cf3ba,
       type: 2}
