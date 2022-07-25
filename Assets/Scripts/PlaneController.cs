@@ -18,35 +18,27 @@ public class PlaneController : MonoBehaviour
     public FlightPhysics flightPhysics;
     public MotorController m_MotorController;
     
-    public GameObject throttleObject;
-    public GameObject flightStickObject;
-    
-    
-    public float motorUpdateInterval = .25f;
-
+    public GameObject throttleObject; // model of the throttle in the cockpit
+    public GameObject flightStickObject; // model of the flightstick in the cockpit
     public AudioManager audioManager;
     
+    public float motorUpdateInterval = .25f; // how many seconds pass between motor updated
     #endregion
 
     #region Private_Members
     private Rigidbody jetBody;
 
-    private Quaternion startPositionFlightStick;
-    private Vector3 currentRotationPerSecond = Vector3.zero;
-    private Vector3 flightStickRotation;
-    private Vector2 delta;
+    private Quaternion startPositionFlightStick; // zero position of the flightstick model
+    private Vector3 flightStickRotation; 
+    private Vector2 flightStickDelta;
+    private bool isFlying = false; // did then plane leave the runway
     
     private float timeSinceLastMotorUpdate = 0f;
-
-    private bool isFlying = false;
+    private Vector3 velocityLastMotorUpdate; // used to calculate the g forces between updates
     #endregion
 
     #region TestVariables
-    
     private Quaternion cameraZeroRotation= Quaternion.Euler(0,0,0 );
-    private Vector3 velocityLastMotorUpdate;
-    
-
     #endregion
     
     
@@ -57,12 +49,12 @@ public class PlaneController : MonoBehaviour
     {
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
-        audioManager.setVolume("highSpeedSound", 0f);
-
+        audioManager.setVolume("highSpeedSound", 0f); // no speed sound at the start
+        
+        
         startPositionFlightStick = joyStick.transform.rotation;
         startPositionFlightStick.x -= 90;
-        //startPositionFlightStick.y += 90;
-        Debug.Log(startPositionFlightStick + " ASDASDJKLHLK ");
+        
     }
     
     void FixedUpdate()
@@ -80,6 +72,7 @@ public class PlaneController : MonoBehaviour
 
     private void OnCollisionStay(Collision other)
     {
+        // keep the plane still while on the runway
         if (other.gameObject.name == "runway1")
         {
             if (throttle.getThrottleValue() == 0)
@@ -95,6 +88,7 @@ public class PlaneController : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
+        //reset the scene on collision with the terrain mesh
         if (other.gameObject.name == "Ground")
         {
             audioManager.Play("crash");
@@ -106,15 +100,18 @@ public class PlaneController : MonoBehaviour
     
     #endregion
     
+    /// <summary>
+    /// Extracts values from joystick and throttle. Moves the plane accordingly.
+    /// </summary>
     private void updatePlane()
     {
         float pitchPercentage = 0f;
         float rollPercentage = 0f;
         if (joyStick.tracking)
         {
-            delta = joyStick.getRelativePosition();
-            pitchPercentage = delta.x;
-            rollPercentage = delta.y;
+            flightStickDelta = joyStick.getRelativePosition();
+            pitchPercentage = flightStickDelta.x;
+            rollPercentage = flightStickDelta.y;
         }
 
         float throttleValue = throttle.getThrottleValue();
@@ -125,14 +122,14 @@ public class PlaneController : MonoBehaviour
         float convertedThrottle = (throttleValue * 2) - 1;
         flightPhysics.Move(rollPercentage, pitchPercentage, 0f, convertedThrottle, true);
     }
-    
-  
-    
     #region ModelUpdate
     
+    /// <summary>
+    /// Aligns the rotation of the throttle and flightstick with the vive controllers.
+    /// </summary>
     private void updateHotasModel()
     {
-        adjustFlightStickModel(delta);
+        adjustFlightStickModel(flightStickDelta);
         throttleObject.transform.localRotation = Quaternion.Euler(new Vector3(calculateThrottleAdjustmentAngle(throttle.getThrottleValue()),0,0));
     }
     
@@ -141,29 +138,31 @@ public class PlaneController : MonoBehaviour
         return ((180 * throttleValue) -180);
     }
 
+    /// <summary>
+    /// Rotates the Flightstick model between 90 and -90 degrees in x and z axis. 
+    /// </summary>
+    /// <param name="rotatedFlightStickVector2">Percentage rotated in x and z axis</param>
     private void adjustFlightStickModel(Vector2 rotatedFlightStickVector2)
     {
        
         Vector2 flightStickadjustment;
-            
         
-            flightStickadjustment.x = (90 * rotatedFlightStickVector2.x) + startPositionFlightStick.x;
-            flightStickadjustment.y = (90 * rotatedFlightStickVector2.y);
-            //startPositionFlightStick = new Vector2(flightStickadjustment.x, flightStickadjustment.y);
+        flightStickadjustment.x = (-90 * rotatedFlightStickVector2.x) + startPositionFlightStick.x;
+        flightStickadjustment.y = (90 * rotatedFlightStickVector2.y);
+        Quaternion origin = startPositionFlightStick;
+        Quaternion change = Quaternion.Euler(flightStickadjustment.x, 0, flightStickadjustment.y);
+        Quaternion delta = Quaternion.Inverse(change) * origin;
+        flightStickObject.transform.localRotation = delta;
 
-            Quaternion origin = startPositionFlightStick;
-                Quaternion change = Quaternion.Euler(
-                flightStickadjustment.x, 0, flightStickadjustment.y);
-            
-        flightStickObject.transform.localRotation = Quaternion.RotateTowards(origin, change, 20f);
-       
 
     }
     
     #endregion
     
     
-    
+    /// <summary>
+    /// Plays sound according to the game situation.
+    /// </summary>
     private void updateSound()
     {
         //if plane is still on the ground the default sound will play
@@ -187,7 +186,9 @@ public class PlaneController : MonoBehaviour
     
     
     #region Motorupdates
-
+    /// <summary>
+    /// Updates the arduino pins in set intervals.
+    /// </summary>
     private void updateMotionSeat()
     {
         if (!m_MotorController.connected()) return;
@@ -202,6 +203,10 @@ public class PlaneController : MonoBehaviour
         }
         
     }
+    /// <summary>
+    /// Calculates the gforce based on the delta of the current velocity and the velocity of last update. Sets/Resets motor 1
+    /// if the gforce reaches a certain threshhold. 
+    /// </summary>
     private void updateForwardGForce()
     {
         
@@ -223,6 +228,9 @@ public class PlaneController : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Used set motor2/3 according to the rotation of the jetbody.
+    /// </summary>
     private void updateRotationMotors()
     {
         Vector3 currentRotation = jetBody.gameObject.transform.localRotation.eulerAngles;
@@ -252,7 +260,10 @@ public class PlaneController : MonoBehaviour
     #endregion
     
     
-    
+   
+    /// <summary>
+    /// Used to align the rotation of the hmd with the plane in edit mode.
+    /// </summary>
     public void alignPlaneWithHMD()
     {
         
