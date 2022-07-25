@@ -100,6 +100,8 @@ public class PlaneController : MonoBehaviour
     
     #endregion
     
+    
+    
     /// <summary>
     /// Extracts values from joystick and throttle. Moves the plane accordingly.
     /// </summary>
@@ -122,6 +124,9 @@ public class PlaneController : MonoBehaviour
         float convertedThrottle = (throttleValue * 2) - 1;
         flightPhysics.Move(rollPercentage, pitchPercentage, 0f, convertedThrottle, true);
     }
+    
+    
+    
     #region ModelUpdate
     
     /// <summary>
@@ -158,6 +163,7 @@ public class PlaneController : MonoBehaviour
     }
     
     #endregion
+    
     
     
     /// <summary>
@@ -259,8 +265,8 @@ public class PlaneController : MonoBehaviour
     }
     #endregion
     
-    
    
+    
     /// <summary>
     /// Used to align the rotation of the hmd with the plane in edit mode.
     /// </summary>
