@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 
@@ -29,8 +30,8 @@ public class PlaneController : MonoBehaviour
 
     #region Private_Members
     private Rigidbody jetBody;
-    
-    
+
+    private Quaternion startPositionFlightStick;
     private Vector3 currentRotationPerSecond = Vector3.zero;
     private Vector3 flightStickRotation;
     private Vector2 delta;
@@ -57,6 +58,11 @@ public class PlaneController : MonoBehaviour
         jetBody = GetComponent<Rigidbody>();
         flightPhysics = GetComponent<FlightPhysics>();
         audioManager.setVolume("highSpeedSound", 0f);
+
+        startPositionFlightStick = joyStick.transform.rotation;
+        startPositionFlightStick.x -= 90;
+        //startPositionFlightStick.y += 90;
+        Debug.Log(startPositionFlightStick + " ASDASDJKLHLK ");
     }
     
     void FixedUpdate()
@@ -135,28 +141,23 @@ public class PlaneController : MonoBehaviour
         return ((180 * throttleValue) -180);
     }
 
-    private void adjustFlightStickModel(Vector3 rotatedFlightStickVector3)
+    private void adjustFlightStickModel(Vector2 rotatedFlightStickVector2)
     {
-        Vector3 flightStickadjustment;
-        if (rotatedFlightStickVector3.x != 0 && rotatedFlightStickVector3.y == 0)  // only x axis is involved
-        {
-            flightStickadjustment.x = (-90 + rotatedFlightStickVector3.x);
-            flightStickadjustment.y = 0;
-            flightStickadjustment.z = 0;
+       
+        Vector2 flightStickadjustment;
             
-        } else if (rotatedFlightStickVector3.x == 0 && rotatedFlightStickVector3.y != 0) // only y axis is involved
-        {
-            flightStickadjustment.x = (-90 + rotatedFlightStickVector3.y);
-            flightStickadjustment.y = 90;
-            flightStickadjustment.z = -90;
-        }
-        else // x and y axis participate 
-        {
-            flightStickadjustment.x = (-90 + rotatedFlightStickVector3.x);
-            flightStickadjustment.y = rotatedFlightStickVector3.y;
-            flightStickadjustment.z = flightStickadjustment.y * (-1);
-        }
-        flightStickObject.transform.rotation = Quaternion.Euler(flightStickadjustment);
+        
+            flightStickadjustment.x = (90 * rotatedFlightStickVector2.x) + startPositionFlightStick.x;
+            flightStickadjustment.y = (90 * rotatedFlightStickVector2.y);
+            //startPositionFlightStick = new Vector2(flightStickadjustment.x, flightStickadjustment.y);
+
+            Quaternion origin = startPositionFlightStick;
+                Quaternion change = Quaternion.Euler(
+                flightStickadjustment.x, 0, flightStickadjustment.y);
+            
+        flightStickObject.transform.localRotation = Quaternion.RotateTowards(origin, change, 20f);
+       
+
     }
     
     #endregion
