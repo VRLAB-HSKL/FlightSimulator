@@ -186,6 +186,7 @@ public class PlaneController : MonoBehaviour
 
     private void updateMotionSeat()
     {
+        if (!m_MotorController.connected()) return;
         timeSinceLastMotorUpdate += Time.deltaTime;
         if (timeSinceLastMotorUpdate >= motorUpdateInterval)
         {

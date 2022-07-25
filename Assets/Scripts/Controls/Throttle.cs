@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using HTC.UnityPlugin.Vive;
@@ -23,6 +24,11 @@ public class Throttle : MonoBehaviour
     #endregion
     
     #region Unity Lifecycle
+
+    private void Start()
+    {
+        if (invert) throttleValue = 1f;
+    }
 
     void Update()
     {

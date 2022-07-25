@@ -40,6 +40,16 @@ public class EndlessTerrain : MonoBehaviour
         chunksize = MapGenerator.mapChunkSize - 1;
         chunksVisibleInViewDistance = Mathf.RoundToInt(maxViewDst / chunksize);
         //initial terrain generation
+
+        for (int i = -15; i < 15; i++)
+        {
+            for (int j = -15; j < 15; j++)
+            {
+                Vector2 viewedChunkCoord = new Vector2(i, j);
+                terrainChunkDictionary.Add(viewedChunkCoord,
+                    new TerrainChunk(viewedChunkCoord, chunksize, detailLevels, transform, mapMaterial));
+            }
+        }
         updateVisibleChunks();
     }
 
