@@ -1,12 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Ports;
 using System.Threading;
-using HTC.UnityPlugin.Vive;
 using UnityEngine;
-using UnityEngine.XR.OpenXR.Features.Interactions;
+
 
 public class SerialConnection : MonoBehaviour
 {

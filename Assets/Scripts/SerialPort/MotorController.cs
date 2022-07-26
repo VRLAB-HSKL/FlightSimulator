@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using static SerialConnection.State;
 

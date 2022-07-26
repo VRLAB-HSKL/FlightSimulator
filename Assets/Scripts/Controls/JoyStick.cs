@@ -1,11 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using HTC.UnityPlugin.Vive;
 using UnityEngine;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.XR;
-using UnityEngine.XR.OpenXR.Features.Interactions;
 
 
 public class JoyStick : MonoBehaviour

@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 
 /// <summary>
 /// Provides a single method for the Mes generation out of a heightmap.

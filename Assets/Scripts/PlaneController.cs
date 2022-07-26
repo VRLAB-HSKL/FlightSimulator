@@ -1,9 +1,5 @@
-
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-
-
 
 
 [RequireComponent(typeof(JoyStick))]
@@ -183,10 +179,13 @@ public class PlaneController : MonoBehaviour
         if (throttle.getThrottleValue() > flightPhysics.Throttle && flightPhysics.getCurrentSpeedInPercent() < 0.95f)
         {
             audioManager.Play("accelerate");
+        }else if (!(throttle.getThrottleValue() * flightPhysics.m_maxSpeed > flightPhysics.currentSpeed))
+        {
+            audioManager.Stop("accelerate");
         }
         if(!audioManager.isPlaying("highSpeedSound")) audioManager.Play("highSpeedSound");
-        
         audioManager.setVolume("highSpeedSound", flightPhysics.getCurrentSpeedInPercent());
+        
     }
 
     
