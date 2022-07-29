@@ -43,11 +43,18 @@ Es wurde die Unity-Version 2020.3.33f1 verwendet.
 
 #### Assets
 Cockpit: https://sketchfab.com/3d-models/spacefighter-cockpit-wasp-interdictor-db4aa67fe1164ec088083d7dac2d273f
+
 Startbahn: https://sketchfab.com/3d-models/runway-and-hangar-cf6a8925f591421a9b82c28c61ad4c47
+
 Skybox: https://assetstore.unity.com/packages/2d/textures-materials/sky/colorskies-91541
 
 Sounds:
+
 https://www.audiyou.de/beitrag/start-eines-airbus-a321-9640/
+
 https://www.audiyou.de/beitrag/boeing-777-fluggerusch-5978/
+
 https://freesound.org/people/qubodup/sounds/162408/
+
 https://freesound.org/people/alex36917/sounds/582250/
+
