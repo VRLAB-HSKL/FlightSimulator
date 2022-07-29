@@ -103,6 +103,7 @@ public class PlaneController : MonoBehaviour
     /// </summary>
     private void updatePlane()
     {
+        //get joystick rotation 
         float pitchPercentage = 0f;
         float rollPercentage = 0f;
         if (joyStick.tracking)
@@ -111,13 +112,15 @@ public class PlaneController : MonoBehaviour
             pitchPercentage = flightStickDelta.x;
             rollPercentage = flightStickDelta.y;
         }
-
+        //get throttle value
         float throttleValue = throttle.getThrottleValue();
         if (throttleValue > 0)
         {
             isFlying = true;
         }
+        //convert throttle into range(-1, 1)
         float convertedThrottle = (throttleValue * 2) - 1;
+        //move the plane
         flightPhysics.Move(rollPercentage, pitchPercentage, 0f, convertedThrottle, true);
     }
     
@@ -151,7 +154,9 @@ public class PlaneController : MonoBehaviour
         flightStickadjustment.x = (-90 * rotatedFlightStickVector2.x) + startPositionFlightStick.x;
         flightStickadjustment.y = (90 * rotatedFlightStickVector2.y);
         Quaternion origin = startPositionFlightStick;
+        //current rotation
         Quaternion change = Quaternion.Euler(flightStickadjustment.x, 0, flightStickadjustment.y);
+        //difference between origin and current rotation
         Quaternion delta = Quaternion.Inverse(change) * origin;
         flightStickObject.transform.localRotation = delta;
 

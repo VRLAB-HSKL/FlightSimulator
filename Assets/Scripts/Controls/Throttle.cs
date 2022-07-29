@@ -7,7 +7,7 @@ public class Throttle : MonoBehaviour
 
     public HandRole role;
     public ControllerButton trackingActivationButton = ControllerButton.Trigger;
-    public float rangeInMeters;
+    public float range;
     public bool invert = false;
 
     #endregion
@@ -92,7 +92,7 @@ public class Throttle : MonoBehaviour
         //get delta
         float changeInZ = (zeroPosition.z - currentPosition.z);
         //get percentage moved in regards to the set range and clamp it between -1 and 1
-        float newPercentage = Mathf.Clamp(changeInZ / rangeInMeters, -1 ,1);
+        float newPercentage = Mathf.Clamp(changeInZ / range, -1 ,1);
         //add the value on top of the current value and clamp it between 0 and 1
         throttleValue = Mathf.Clamp01(throttleValue + newPercentage);
     }

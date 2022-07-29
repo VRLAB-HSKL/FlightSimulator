@@ -63,7 +63,7 @@ public class SerialConnection : MonoBehaviour
     /// <summary>
     /// Reads incoming data from the serialport and logs it to console, if the corresponding flag is set.
     /// </summary>
-    public void read()
+    private void read()
     {
         while (true)
         {
@@ -86,18 +86,18 @@ public class SerialConnection : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the output on the corresponding port to the specified value. The send command string consists of 5 characters.
+    /// Sets the output on the corresponding pin to the specified value. The send command string consists of 5 characters.
     /// This means every time this function gets called 40 bit will be send over the serial port. 
     /// </summary>
-    /// <param name="port">Port number, allowed range for the arduino uno r3 is 2-13, 13 corresponds to the led builtin</param>
-    /// <param name="value">value of the port</param>
+    /// <param name="pin">Pin number, allowed range for the arduino uno r3 is 2-13, 13 corresponds to the led builtin</param>
+    /// <param name="value">High or Low</param>
     /// <exception cref="ArgumentException">Gets thrown if port or value is not in allowed range of values</exception>
-    public static void setOutputOnPort(int port, State value)
+    public static void setOutputOnPin(int pin, State value)
     {
         
-        if (port < minPortNumber|| port > maxPortNumber)
+        if (pin < minPortNumber|| pin > maxPortNumber)
         {
-            throw new ArgumentException("Port '" + port +"' is no valid port");
+            throw new ArgumentException("Port '" + pin +"' is no valid port");
         }
 
         int valueNumber;
@@ -114,7 +114,7 @@ public class SerialConnection : MonoBehaviour
         }
         if (stream.IsOpen)
         {
-            stream.WriteLine(setOperationChar + port + ":" + valueNumber);    
+            stream.WriteLine(setOperationChar + pin + ":" + valueNumber);    
         }
         else
         {
@@ -124,7 +124,7 @@ public class SerialConnection : MonoBehaviour
     }
 
     /// <summary>
-    /// Resets all ports on the arduino board to 0.
+    /// Resets all digital pins on the arduino board to 0.
     /// </summary>
     public static void resetAll()
     {

@@ -35,52 +35,52 @@ public class MotorController : MonoBehaviour
     #region Set Motor Functions
     public void setMotor1()
     {
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_SET, HIGH);
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_RESET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR1_PORT_SET, HIGH);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR1_PORT_RESET, LOW);
     }
 
     public void resetMotor1()
     {
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_RESET, HIGH);
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_SET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR1_PORT_RESET, HIGH);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR1_PORT_SET, LOW);
     }
 
     public void disableMotor1()
     {
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_RESET, LOW);
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR1_PORT_SET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR1_PORT_RESET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR1_PORT_SET, LOW);
     }
     public void setMotor2()
     {
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_SET, HIGH);
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_RESET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR2_PORT_SET, HIGH);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR2_PORT_RESET, LOW);
     }
 
     public void resetMotor2()
     {
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_RESET, HIGH);
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_SET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR2_PORT_RESET, HIGH);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR2_PORT_SET, LOW);
     }
     public void disableMotor2()
     {
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_RESET, LOW);
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR2_PORT_SET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR2_PORT_RESET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR2_PORT_SET, LOW);
     }
     public void setMotor3()
     {
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, HIGH);
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR3_PORT_SET, HIGH);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR3_PORT_RESET, LOW);
     }
 
     public void resetMotor3()
     {
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, HIGH);
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR3_PORT_RESET, HIGH);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR3_PORT_SET, LOW);
     }
     public void disableMotor3()
     {
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_RESET, LOW);
-        SerialConnection.setOutputOnPort(SerialConnection.MOTOR3_PORT_SET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR3_PORT_RESET, LOW);
+        SerialConnection.setOutputOnPin(SerialConnection.MOTOR3_PORT_SET, LOW);
     }
 
     public void disableAllMotors()
